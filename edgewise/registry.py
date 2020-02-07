@@ -9,9 +9,6 @@ import typing
 from .document import Document
 from .edb_utils import type_map
 
-# https://docs.python.org/3/library/shelve.html
-# https://code.activestate.com/recipes/576642/
-
 
 @attrs  # (frozen=True)
 class ClassRegistry:
@@ -43,7 +40,7 @@ class ClassRegistry:
     def inspect_db(self, connection=None, module=None, object=None):
         self.database = self.connect() if not connection else connection
         if object:
-            module = module if module else 'default'
+            module = module if module else "default"
             filter = f"\nFILTER .name = '{module}::{object}';" if object else ""
             return self.database.fetchall(schema_query + filter)
         return self.database.fetchall(schema_query + non_standard_objects)
@@ -64,7 +61,7 @@ class ClassRegistry:
     def _build_attributes(self, obj: edgedb.Object) -> dict:
         object_module, object_name = obj.name.split("::")
         attributes = {}
-        attributes['__edbmodule__'] = attrib(default=object_module, type=str)
+        attributes["__edbmodule__"] = attrib(default=object_module, type=str)
         for prop in obj.properties:
             prop_type = type_map.get(prop.target.name.split("::")[1])
             if prop.name in ("id"):
@@ -76,13 +73,10 @@ class ClassRegistry:
             if link.name == "__type__":
                 continue
             link_type = typing.Optional[link.target.name.split("::")[1]]
-            if link.cardinality == 'MANY':
+            if link.cardinality == "MANY":
                 link_type = typing.Optional[typing.List[link_type]]
             attributes[link.name] = attrib(default=None, type=link_type)
         return attributes
-
-    def shelve(self, file_path):
-        pass
 
     def new_doc(self, key, *args, **kwargs):
         cls = self.registry[key]
