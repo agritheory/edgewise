@@ -70,7 +70,7 @@ class Document:
 
     def _insert(self) -> Document:
         if not self.__createdutc__:
-            self.__createdutc__ = datetime.datetime.utcnow()
+            self.__createdutc__ = datetime.utcnow()
             self.__modifiedutc__ = self.__createdutc__
         insert = (
             f"WITH MODULE {self.__edbmodule__} INSERT {self.__class__.__name__} {{ \n"
@@ -81,7 +81,7 @@ class Document:
             edgewise.connect().execute(insert)
 
     def _update(self) -> Document:
-        self.__modifiedutc__ = datetime.datetime.utcnow()
+        self.__modifiedutc__ = datetime.utcnow()
         values = ",\n".join(f"\t{k} := '{v}'" for k, v in self.items() if k != "id")
         update = f"""WITH MODULE {self.__edbmodule__}
             UPDATE {self.__class__.__name__}

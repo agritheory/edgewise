@@ -32,24 +32,20 @@ COMMIT MIGRATION init_user;
 """
 
 
-@click.command()
-def create_user_doctype():
-    conn = connect_to_example_db()
-    exists = conn.fetchall("""
-            WITH x := (SELECT schema::Module {name}
-            FILTER schema::Module.name = 'example') SELECT x.name;
-        """)
-    if not exists:
-        conn.execute("CREATE MODULE example")
-    with conn.transaction():
-        conn.execute(user_schema)
+def create_records(company=1, user=1, rbac_role=1):
+    for i in range(0, company):
+        create_company()
+    for i in range(0, user):
+        create_user()
+    for i in range(0, rbac_role):
+        create_rbac_role()
 
 
 def create_company():
     company = edgewise.new_doc("Company")
     company.name = mimesis.Person("en").last_name() + " " + mimesis.Business().company_type(abbr=True)
     company.country = "United States"
-    return company
+    company.save()
 
 
 def create_user():
@@ -60,4 +56,10 @@ def create_user():
     user.email = person.email()
     user.password = person.password()
     user.username = person.username()
-    return user
+    user.save()
+
+
+def create_rbac_role():
+    role = edgewise.new_doc("RBACRole")
+    role.name = mimesis.Person("en").occupation().replace(' ', '')
+    role.save()

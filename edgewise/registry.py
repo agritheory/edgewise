@@ -14,8 +14,6 @@ from .edb_utils import type_map
 class ClassRegistry:
     registry = attrib(default={})
     database = attrib(default=None)
-    filepath = attrib(default=None)
-    modules = attrib(default=None)
 
     def __attrs_post_init__(self) -> typing.NoReturn:
         classes = self.inspect_db()
@@ -41,7 +39,7 @@ class ClassRegistry:
         self.database = self.connect() if not connection else connection
         if object:
             module = module if module else "default"
-            filter = f"\nFILTER .name = '{module}::{object}';" if object else ""
+            filter = f"\nFILTER .name = '{module}::{object}' LIMIT 1;" if object else ""
             return self.database.fetchall(schema_query + filter)
         return self.database.fetchall(schema_query + non_standard_objects)
 
@@ -52,11 +50,13 @@ class ClassRegistry:
             new_class = make_class(object_name, attributes, bases=(Document,))
             self.register(object_name, new_class)
 
-    def merge_class(self, class_definition) -> typing.NoReturn:
-        obj = self.inspect_db(object=class_definition.__name__)
+    def merge_class(self, module, class_definition) -> typing.NoReturn:
+        obj = self.inspect_db(module=module, object=class_definition.__name__)[0]
         attributes = self._build_attributes(obj)
-        new_class = make_class(object_name, attributes, bases=(class_definition,))
-        self.register(object_name, new_class)
+        new_class = make_class(
+            class_definition.__name__, attributes, bases=(class_definition,)
+        )
+        self.register(class_definition.__name__, new_class)
 
     def _build_attributes(self, obj: edgedb.Object) -> dict:
         object_module, object_name = obj.name.split("::")
