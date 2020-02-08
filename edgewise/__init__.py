@@ -22,8 +22,6 @@ def new_doc(cls, *args, **kwargs):
 
 def get_doc(cls, uuid=None, filters=None):
     global class_registry
-    if not uuid and not filters:
-        raise TypeError("Either UUID or filters are required to retreive a document")
     _doc = class_registry.new_doc(cls)
     return _doc._load(uuid) if uuid else _doc._load(filters=filters)
 
@@ -34,7 +32,9 @@ def register(class_definition, *args, **kwargs):
     return class_definition
 
 
-def register_with_schema(class_definition, *args, **kwargs):
-    global class_registry
-    class_registry.merge_class(class_definition)
-    return class_definition
+def register_with_schema(module: str):
+    def wrapped_registration(class_definition, *args, **kwargs):
+        global class_registry
+        class_registry.merge_class(module, class_definition)
+        return class_definition
+    return wrapped_registration
