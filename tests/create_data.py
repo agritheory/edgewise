@@ -21,6 +21,7 @@ CREATE MIGRATION init_user TO {
         type User {
             property first_name -> str;
             property last_name -> str;
+            property email -> str;
             required property username -> str;
             required property password -> str;
             multi link company -> Company;
@@ -41,25 +42,33 @@ def create_records(company=1, user=1, rbac_role=1):
         create_rbac_role()
 
 
-def create_company():
+def create_company(save=False):
     company = edgewise.new_doc("Company")
-    company.name = mimesis.Person("en").last_name() + " " + mimesis.Business().company_type(abbr=True)
+    company.name = mimesis.Person("en").last_name() + " "\
+        + mimesis.Business().company_type(abbr=True)
     company.country = "United States"
-    company.save()
+    if save:
+        company.save()
+    return company
 
 
-def create_user():
+def create_user(save=False):
     person = mimesis.Person("en")
     user = edgewise.new_doc("User")
     user.first_name = person.name()
     user.last_name = person.last_name()
-    user.email = person.email()
+    # user.email = person.email()
     user.password = person.password()
     user.username = person.username()
-    user.save()
+    user.rbac_role = edgewise.new_doc("RBACRole", name='Database Administrator')
+    if save:
+        user.save()
+    return user
 
 
-def create_rbac_role():
+def create_rbac_role(save=False):
     role = edgewise.new_doc("RBACRole")
     role.name = mimesis.Person("en").occupation().replace(' ', '')
-    role.save()
+    if save:
+        role.save()
+    return role
