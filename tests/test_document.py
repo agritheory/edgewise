@@ -1,16 +1,18 @@
 from attr import attrs, attrib
 import edgewise
 from edgewise import Document, register, register_with_schema
+import typing
 
 
 @attrs
 @register
-class ExampleDocument(Document):
-    pass
+class DocumentNotInDatabase(Document):
+    def connect_to_filesystem(self) -> typing.NoReturn:
+        pass
 
 
 @attrs
-@register_with_schema
-class User(Document):
-    def test_this_class_method(self):
-        return 'testing this class method'
+@register_with_schema(module='example')
+class Company(Document):
+    def your_class_method(self) -> str:
+        return "A class method method!"
