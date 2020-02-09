@@ -2,42 +2,6 @@
 
 This library is designed to be used as an Active Record style Object Relational Mapper for [EdgeDB](https://edgedb.com). A `ClassRegistry` object is built from a combination of EdgeDB schema and the `@register` decorator, which allows for merging class definition and database schema. This means you're able to add an overlay of your own class methods and properties that otherwise wouldn't exist. New instances can be created by calling `edgewise.new_doc('Object')`. Existing objects can be fetched with `edgewise.get_doc('Object', uuid, filters)` using either the object's unique uuid or a dictionary of filters (`{'name': 'Magic'}`)
 
-## Triage/ Bug Fixes
-- [ ] Handle `tuple` and `namedtuple` scalars
-- [ ] Nested update - is this even a thing?
-- [ ] Make async interface
-- [ ] `setup.py`
-- [ ] Docker >> Test suite >> GitlabCI
-
-## To Do/ Roadmap
-- [x] Bind to app/ database connection pattern
-  - [ ] Use `ipython` with custom boot sequence so there's a repl with native async methods available to you (H/T Frappe)
-- [x] Get IOC mechanism and registry working
-  - [x] Decorator to register non-edgeDB classes to work with `new_doc`
-  - [ ] Mutation-only approach
-  - [ ] ~~Shelve/ persist~~ Not sure this is required and may add needless complexity
-  - [ ] Append type map to handle custom scalars (use password in tests)
-  - [ ] Password scalar [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
-  - [ ] Provide esdl utilities for timestamping and user modification
-
-- [ ] Use a state machine model to trigger python hooks
-  - [ ] Use [transitions](https://github.com/pytransitions/transitions) library for FSM?
-  - [ ] Save StatePattern object to DB, load into registry as `state_patterns` in separate registry
-  - [ ] Generate state charts/ export to scxml? (not `transitions`)
-  - [ ] Default transitions ~~are~~ will be automatic:
-    - [ ] Init, Before Insert, After Insert, Before Update, After Update, Before Delete, After Delete
-    - [ ] Custom example would be "Before Submit, "After Submit"
-    - [ ] Another would be adding an "Approve" step
-
-Further work and examples:
-
-- [ ] Quart, POP and Starlette integrations
-- [ ] Load test/ benchmark and optimize
-- [ ] GUI (framework.../ VueCLI type thing?)
-- [ ] ~~Command line doctype creation?~~ There's no strong reason to to this, EdgeDB's SDL is better than anything that could be accomplished on the command line. Maybe to create boilerplate edsl and class, helps with app structure
-- [ ] Export schema to `module` folder
-- [ ] Generate Entity Relation Charts from schema, though this should really be part of an equivalent JS/TS project? `edgewise.js` -> seems worth it to have matching APIs
-
 ## Getting Started
 ### Prerequisites
 This library uses python >3.7 and requires that EdgeDB be installed. Follow the [installation instructions](https://edgedb.com/docs/tutorial/install) given in the EdgeDB documentation.
@@ -93,7 +57,7 @@ class DocumentNotInDatabase(Document):
 In this case, you will probably want to provide the `edgewise` APIs you'd expect to see: `_load` (called by `get_doc`), `save` and `delete`; only `new_doc` will work out of the box.
 
 
-### edge|DB Configuration and Connectivity
+### EdgeDB Configuration and Connectivity
 **WIP**
 You'll want to configure a user with administrative permissions. For example:
 
@@ -108,13 +72,15 @@ python -m pip install edgewise
 If you've read this far you know that you should use a virtual environment and you should do that however you like. But you should do it. For development this project uses Pipenv until something better comes along, which has probably already happened.
 
 ## Developing with Edgewise
+Have a look at [the roadmap](./roadmap.md), which is about as useful as a streetmap of Boston.
+
 ### Examples
 Examples are available in the examples folder. Some of these will be covered in the tutorial documentation.
 
 If you're considering integrating this library into a framework or project, please consider contributing your changes and/or add an example implementation to the test suite so that breaking changes can be discovered before they mess up your project.
 
 ## Dependencies and Tooling
-For production code this project uses `attrs`, `python-dotenv` and the edgedb python client.
+For production code this project uses `attrs`, `python-dotenv` and the EdgeDB python client.
 For testing and development: `pipenv`, `black`, `pytest` (and several plugins), and `ipython`. Please refer to the Pipfile for more information.
 
 ## Contributing
@@ -124,10 +90,10 @@ Contributions are welcome, please refer to the wiki regarding:
 * Requesting support
 
 ## Versioning
-This project uses [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/agritheory/edgewise/tags).
+This project ~~uses~~ will use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/agritheory/edgewise/tags).
 
 ## Authors
 * **Tyler Matteson** - *Initial work* - [AgriTheory](https://agritheory.com/)
 
 ## License
- See the [license.md](license.md) file for details
+ See the [license.md](./license.md) file for details
