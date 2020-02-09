@@ -13,7 +13,7 @@ The EdgeDB python library is intended to be relatively low-level and highly perf
 ### How it Works
 This library first inspects your EdgeDB database with a schema query and builds classes from that with the help of the [attrs](www.attrs.org) library. In formal computer science this is called an Inversion of Control pattern. You can create a new python instance of a class by calling `edgewise.new_doc('Object')` where 'Object' is the name of your EdgeDB object. All edgewise classes inherit from `Document` which provides several useful abstractions for you.
 
-### Basic Usage
+### Basic Usage - Objects
 ```python
 >>> import edgewise
 >>> doc = edgewise.get_doc('Company', {'name':'Fancy Business'}) # schema defined here[]()
@@ -56,6 +56,39 @@ class DocumentNotInDatabase(Document):
 ```
 In this case, you will probably want to provide the `edgewise` APIs you'd expect to see: `_load` (called by `get_doc`), `save` and `delete`; only `new_doc` will work out of the box.
 
+### Basic Usage - Scalars and Enums
+EdgeDB allows you define custom scalars and enums, Edgewise supports mapping these to python representations. Enums will use the Edgewise `DefaultEnum` class. Scalars will use the CustomScalar class. CustomScalars are extensible with a decorator. You can also put a custom object into the registry with  the `@register_scalar` decorator.
+
+```python
+@attrs
+@register_scalar
+class RandomScalar(CustomScalar):
+    def print_somthing(self):
+        return f"Something!"
+
+
+@attrs
+@register_scalar_with_schema(module='example')
+class Password(CustomScalar):
+    def print_password(self):
+        return f"Password(******)"
+```
+Using this example enum definition will yield a python enum object with the ability to also store a default value.
+```
+scalar type Color extending enum<'black', 'white', 'red'>;
+```
+```python
+>>> import edgewise
+>>> colors = edgewise.new_scalar('Color')
+>>> colors
+<enum 'Color'>  # The default enum __repr__ is useless
+>>> colors.black
+Color(name='black', value=1, default=True) # this repr is provided by DefaultEnum
+>>> colors.white
+Color(name='white', value=2, default=False)
+>>> colors.default()
+'black'
+```
 
 ### EdgeDB Configuration and Connectivity
 **WIP**

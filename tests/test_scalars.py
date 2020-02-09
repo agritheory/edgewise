@@ -6,13 +6,13 @@ import typing
 
 @attrs
 @register_scalar
-class SecretPassword(CustomScalar):
-    def print_password(self):
-        return f"Password(******)"
+class RandomScalar(CustomScalar):
+    def print_somthing(self):
+        return f"Something!"
 
 
 @attrs
 @register_scalar_with_schema(module='example')
 class Password(CustomScalar):
-    def __repr__(self):
+    def print_password(self):
         return f"Password(******)"

@@ -3,8 +3,8 @@ A brain dump of ideas for this project, good and bad.
 
 
 ## Triage/ Bug Fixes
-- [ ] Handle `tuple` and `namedtuple` scalars explicitly => part of the scalar registry feature
-- [ ] Handle `enum` scalar as part of scalar registry
+- [ ] Handle `tuple` and `namedtuple` scalars explicitly
+- [x] Handle `enum` scalar as part of scalar registry
 - [ ] Nested update - is this even a thing?
 - [ ] `ipython` with custom boot sequence
 - [ ] Make async interface (build `ipython` piece first for better manual testing)
