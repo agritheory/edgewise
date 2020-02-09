@@ -1,40 +1,6 @@
 from __future__ import annotations
 
-# __all__ = ['new_doc', 'get_doc', 'register_class']
-# __module__ = 'edgewise'
-import functools
-from .registry import ClassRegistry
-from .document import Document
+__version__ = ''
 
-
-class_registry = ClassRegistry()
-
-
-def connect():
-    global class_registry
-    return class_registry.database
-
-
-def new_doc(cls, *args, **kwargs):
-    global class_registry
-    return class_registry.new_doc(cls, *args, **kwargs)
-
-
-def get_doc(cls, uuid=None, filters=None):
-    global class_registry
-    _doc = class_registry.new_doc(cls)
-    return _doc._load(uuid) if uuid else _doc._load(filters=filters)
-
-
-def register(class_definition, *args, **kwargs):
-    global class_registry
-    class_registry.register(class_definition.__name__, class_definition)
-    return class_definition
-
-
-def register_with_schema(module: str):
-    def wrapped_registration(class_definition, *args, **kwargs):
-        global class_registry
-        class_registry.merge_class(module, class_definition)
-        return class_definition
-    return wrapped_registration
+# import edgewise
+from .edgewise import connect, get_doc, new_doc, register, register_with_schema
