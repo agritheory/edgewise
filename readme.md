@@ -2,14 +2,24 @@
 
 This library is designed to be used as an Active Record style Object Relational Mapper for [EdgeDB](https://edgedb.com). A `ClassRegistry` object is built from a combination of EdgeDB schema and the `@register` decorator, which allows for merging class definition and database schema. This means you're able to add an overlay of your own class methods and properties that otherwise wouldn't exist. New instances can be created by calling `edgewise.new_doc('Object')`. Existing objects can be fetched with `edgewise.get_doc('Object', uuid, filters)` using either the object's unique uuid or a dictionary of filters (`{'name': 'Magic'}`)
 
-## To Do
+## Triage/ Bug Fixes
+- [ ] Handle `tuple` and `namedtuple` scalars
+- [ ] Nested update - is this even a thing?
+- [ ] Make async interface
+- [ ] `setup.py`
+- [ ] Docker >> Test suite >> GitlabCI
+
+## To Do/ Roadmap
 - [x] Bind to app/ database connection pattern
+  - [ ] Use `ipython` with custom boot sequence so there's a repl with native async methods available to you (H/T Frappe)
 - [x] Get IOC mechanism and registry working
-  - [ ] Mutation-only approach?
-  - [ ] ~~Shelve/ persist~~ # Not sure this is required and may add needless complexity
-  - [ ] [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
-  - [x] Decorator to register non-edgeDB classes
-- [ ] Export schema to `module` folder
+  - [x] Decorator to register non-edgeDB classes to work with `new_doc`
+  - [ ] Mutation-only approach
+  - [ ] ~~Shelve/ persist~~ Not sure this is required and may add needless complexity
+  - [ ] Append type map to handle custom scalars (use password in tests)
+  - [ ] Password scalar [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
+  - [ ] Provide esdl utilities for timestamping and user modification
+
 - [ ] Use a state machine model to trigger python hooks
   - [ ] Use [transitions](https://github.com/pytransitions/transitions) library for FSM?
   - [ ] Save StatePattern object to DB, load into registry as `state_patterns` in separate registry
@@ -24,8 +34,9 @@ Further work and examples:
 - [ ] Quart, POP and Starlette integrations
 - [ ] Load test/ benchmark and optimize
 - [ ] GUI (framework.../ VueCLI type thing?)
-- [ ] Command line doctype creation?
-- [ ] Generate Entity Relation Charts from schema, though this should really be part of an quivalent JS project
+- [ ] ~~Command line doctype creation?~~ There's no strong reason to to this, EdgeDB's SDL is better than anything that could be accomplished on the command line. Maybe to create boilerplate edsl and class, helps with app structure
+- [ ] Export schema to `module` folder
+- [ ] Generate Entity Relation Charts from schema, though this should really be part of an equivalent JS/TS project? `edgewise.js` -> seems worth it to have matching APIs
 
 ## Getting Started
 ### Prerequisites
@@ -33,10 +44,10 @@ This library uses python >3.7 and requires that EdgeDB be installed. Follow the 
 
 This library ~~uses~~ will use asyncio by default and generally defers to it whenever possible.
 ### Why?
-The EdgeDB python library is intended to be relatively low-level and highly performant. This library is designed to be intuitive and help you access and amipulate documents in relatively few steps, in a object oriented style. If you're doing a large application with EdgeDB you should be prepared to use both libraries. EdgeDB SDL is the among the most intuitive ways to define schema. This library take the approach that you should design your schema in its native language and access it in a way thats easiest for you.
+The EdgeDB python library is intended to be relatively low-level and highly performant. This library is designed to be intuitive and help you access and amipulate documents in relatively few steps, in a object oriented style. If you're doing a large application with EdgeDB you should be prepared to use both libraries. EdgeDB SDL is the among the most intuitive ways to define schema. This library take the approach that you should design your schema in its native language and access it in a way that's easiest for you.
 
 ### How it Works
-This library first inspects your EdgeDB database with a schema query and builds classes from that with the help of the [attrs]() library. In formal computer science this is called an Inversion of Control pattern. You can create a new python instance of a class by calling `edgewise.new_doc('Object')` where 'Object' is the name of your EdgeDB object. All edgewise classes inherit from `Document` which provides several useful abstractions for you.
+This library first inspects your EdgeDB database with a schema query and builds classes from that with the help of the [attrs](www.attrs.org) library. In formal computer science this is called an Inversion of Control pattern. You can create a new python instance of a class by calling `edgewise.new_doc('Object')` where 'Object' is the name of your EdgeDB object. All edgewise classes inherit from `Document` which provides several useful abstractions for you.
 
 ### Basic Usage
 ```python
@@ -79,6 +90,8 @@ class DocumentNotInDatabase(Document):
     def connect_to_filesystem(self) -> typing.NoReturn:
         pass
 ```
+In this case, you will probably want to provide the `edgewise` APIs you'd expect to see: `_load` (called by `get_doc`), `save` and `delete`; only `new_doc` will work out of the box.
+
 
 ### edge|DB Configuration and Connectivity
 **WIP**
@@ -94,7 +107,7 @@ python -m pip install edgewise
 ```
 If you've read this far you know that you should use a virtual environment and you should do that however you like. But you should do it. For development this project uses Pipenv until something better comes along, which has probably already happened.
 
-## Developing with edge|wise
+## Developing with Edgewise
 ### Examples
 Examples are available in the examples folder. Some of these will be covered in the tutorial documentation.
 
@@ -102,7 +115,7 @@ If you're considering integrating this library into a framework or project, plea
 
 ## Dependencies and Tooling
 For production code this project uses `attrs`, `python-dotenv` and the edgedb python client.
-For testing and development: `pipenv`, `black`, `pytest`, `hypothesis`, `coverage` and `httpx`. Please refer to the Pipfile for more information.
+For testing and development: `pipenv`, `black`, `pytest` (and several plugins), and `ipython`. Please refer to the Pipfile for more information.
 
 ## Contributing
 
