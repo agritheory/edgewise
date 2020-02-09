@@ -2,6 +2,7 @@ from __future__ import annotations
 import typing
 from edgewise.registry import ClassRegistry
 from edgewise.document import Document
+from edgewise.scalars import CustomScalar, DefaultEnum
 from uuid import UUID
 
 class_registry = ClassRegistry()
@@ -38,4 +39,23 @@ def register_with_schema(module: str):
         global class_registry
         class_registry.merge_class(module, class_definition)
         return class_definition
+    return wrapped_registration
+
+
+def new_scalar(scalar: str, *args, **kwargs) -> Document:
+    global class_registry
+    return class_registry.new_scalar(scalar, *args, **kwargs)
+
+
+def register_scalar(scalar_definition, *args, **kwargs):
+    global class_registry
+    class_registry._register_scalar(scalar_definition.__name__, scalar_definition)
+    return scalar_definition
+
+
+def register_scalar_with_schema(module: str):
+    def wrapped_registration(scalar_definition, *args, **kwargs):
+        global class_registry
+        class_registry.merge_custom_scalar(module, scalar_definition)
+        return scalar_definition
     return wrapped_registration

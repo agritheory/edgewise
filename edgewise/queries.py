@@ -59,3 +59,65 @@ def nested_single_link(doc):
 
 def nested_multi_link(doc):
     pass
+
+
+def object_schema(filter: str = "") -> str:
+    schema_query = """
+    WITH MODULE schema
+    SELECT ObjectType {
+        name,
+        is_abstract,
+        is_final,
+        bases: { name },
+        ancestors: { name },
+        annotations: { name, @value },
+        links: {
+            name,
+            cardinality,
+            required,
+            target: { name },
+        },
+        properties: {
+            name,
+            cardinality,
+            required,
+            target: { name },
+        },
+        constraints: { name },
+        indexes: { name, expr },
+    }
+    """
+    return schema_query + filter if filter else schema_query + "\nFILTER "  + NON_STANDARD_OBJECTS
+
+
+def enum_schema() -> str:
+    return """
+    WITH MODULE schema
+    SELECT ScalarType {
+        name,
+        default,
+        enum_values,
+        annotations: { name, @value },
+        constraints: { name },
+    }
+    FILTER EXISTS .enum_values""" + " AND " + NON_STANDARD_OBJECTS
+
+
+def custom_scalar_schema() -> str:
+    return """
+    WITH MODULE schema
+    SELECT ScalarType {
+        name,
+        default,
+        annotations: { name, @value },
+        constraints: { name },
+    }
+    FILTER NOT EXISTS .enum_values AND """ + NON_STANDARD_OBJECTS
+
+
+NON_STANDARD_OBJECTS = """NOT contains(.name, 'cfg::')
+AND NOT contains(.name, 'schema::')
+AND NOT contains(.name, 'std::')
+AND NOT contains(.name, 'stdgraphql::')
+AND NOT contains(.name, 'sys::')
+AND NOT contains(.name, 'cal::');"""

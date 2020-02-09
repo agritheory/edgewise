@@ -1,48 +1,65 @@
 from __future__ import annotations
 from attr import attrs, attrib, make_class
 import edgedb
-from pathlib import Path
-from typing import Optional, Hashable
+import enum
 import dotenv
 import os
 import typing
 from .document import Document
 from .edb_utils import type_map
+from edgewise.utils import connect_sync
+from edgewise.queries import object_schema, enum_schema, custom_scalar_schema
+from edgewise.scalars import DefaultEnum, CustomScalar
 
 
 @attrs  # (frozen=True)
 class ClassRegistry:
     registry = attrib(default={})
     database = attrib(default=None)
+    scalars = attrib(default={})
     repr_timestamps = attrib(default=False)
 
-    def __attrs_post_init__(self) -> typing.NoReturn:
-        classes = self.inspect_db()
-        if classes:
-            self.build_classes(classes)
+    def __attrs_post_init__(self, connection: typing.Optional[edgedb.BlockingIOConnection] = None) -> typing.NoReturn:
+        self.database = connect_sync() if not connection else connection
+        self.build_classes(self.get_object_schema())
+        self.build_enums(self.get_enum_schema())
+        self.build_custom_scalars(self.get_custom_scalar_schema())
+        # scalars += self.build_collections(self.get_collections_schema())
 
     # def mutate(self, key, value):  # better name update?
     #     return attr.evolve(self, key=value)
+    def new_doc(self, key: str, *args, **kwargs):
+        cls = self.registry[key]
+        return cls(*args, **kwargs)
+
+    def new_scalar(self, key: str, *args, **kwargs):
+        cls = self.scalars[key]
+        if issubclass(cls, enum.Enum):
+            return cls
+        return cls(*args, **kwargs)
 
     def register(self, key: str, cls: type) -> typing.NoReturn:
         self.registry[key] = cls
 
-    def connect(self, connection=None):
-        dotenv.load_dotenv()
-        return edgedb.connect(
-            host=os.getenv("EDGEDB_HOST", default="localhost"),
-            user=os.getenv("EDGEDB_USER", default="edgedb"),
-            password=os.getenv("EDGEDB_PASSWORD"),
-            database=os.getenv("EDGEDB_DATABASE", default="example"),
-        )
+    def _register_scalar(self, key: str, cls: type) -> typing.NoReturn:
+        print(key)
+        self.scalars[key] = cls
 
-    def inspect_db(self, connection=None, module=None, object=None):
-        self.database = self.connect() if not connection else connection
+    def get_object_schema(self, module: typing.Optional[str] = None, object: typing.Optional[str] = None):
         if object:
             module = module if module else "default"
             filter = f"\nFILTER .name = '{module}::{object}' LIMIT 1;" if object else ""
-            return self.database.fetchall(schema_query + filter)
-        return self.database.fetchall(schema_query + non_standard_objects)
+            return self.database.fetchall(object_schema(filter))
+        return self.database.fetchall(object_schema())
+
+    def get_enum_schema(self, module: typing.Optional[str] = None, enum: typing.Optional[str] = None):
+        return self.database.fetchall(enum_schema())
+
+    def get_custom_scalar_schema(self, module: typing.Optional[str] = None, scalar: typing.Optional[str] = None):
+        return self.database.fetchall(custom_scalar_schema())
+
+    def get_custom_collection_schema(self, module: typing.Optional[str] = None, collection: typing.Optional[str] = None):
+        return self.database.fetchall(collection_schema())
 
     def build_classes(self, objects) -> typing.NoReturn:
         for obj in objects:
@@ -52,7 +69,7 @@ class ClassRegistry:
             self.register(object_name, new_class)
 
     def merge_class(self, module, class_definition) -> typing.NoReturn:
-        obj = self.inspect_db(module=module, object=class_definition.__name__)[0]
+        obj = self.get_object_schema(module=module, object=class_definition.__name__)[0]
         attributes = self._build_attributes(obj)
         new_class = make_class(
             class_definition.__name__, attributes, bases=(class_definition,)
@@ -64,17 +81,18 @@ class ClassRegistry:
         attributes = {}
         attributes["__edbmodule__"] = attrib(default=object_module, type=str, repr=False)
         for prop in obj.properties:
-            prop_type = type_map.get(prop.target.name.split("::")[1])
+            if 'tuple' in prop.target.name:
+                prop_type = prop.target.name
+            else:
+                prop_type = type_map.get(prop.target.name.split("::")[1])
             if prop.name in ("id"):
                 continue
+
             # if prop.name in ("id", "__edbmodule__"):
             #     attributes[prop.name] = attrib(default=None, type=prop_type, repr=self.repr_id_and_module)
             # if prop.name in ("__createdutc__", "__modifiedutc__"):
             #     attributes[prop.name] = attrib(default=None, type=prop_type, repr=self.repr_timestamps)
             attributes[prop.name] = attrib(default=None, type=prop_type)
-
-            # need a repr=**obfuscated** for password scalar
-            # password = attrib(repr=lambda value: '***')
         for link in obj.links:
             if link.name == "__type__":
                 continue
@@ -84,39 +102,39 @@ class ClassRegistry:
             attributes[link.name] = attrib(default=None, type=link_type)
         return attributes
 
-    def new_doc(self, key, *args, **kwargs):
-        cls = self.registry[key]
-        return cls(*args, **kwargs)
+    def build_enums(self, enums) -> typing.NoReturn:
+        for enum in enums:
+            enum_module, enum_name = enum.name.split("::")
+            new_enum = DefaultEnum(enum_name, list(enum.enum_values))
+            new_enum._default = enum.default if enum.default else enum.enum_values[0]
+            new_enum.__edbmodule__ = enum_module
+            if enum.annotations:
+                new_enum.__doc__ = enum.annotations
+            new_enum.__name__ = enum_name
+            self._register_scalar(enum_name, new_enum)
 
+    def build_custom_scalars(self, scalars) -> typing.NoReturn:
+        for scalar in scalars:
+            attributes = {}
+            scalar_module, scalar_name = scalar.name.split("::")
+            default = scalar.default if scalar.default else None
+            attributes["__edbmodule__"] = attrib(default=scalar_module, type=str, repr=True)
+            attributes['value'] = attrib(default=None, type=typing.Optional[str])
+            attributes['default'] = attrib(default=default, type=typing.Optional[str])
+            new_class = make_class(scalar_name, attributes, bases=(CustomScalar,))
+            self._register_scalar(scalar_name, new_class)
 
-schema_query = """
-WITH MODULE schema
-SELECT ObjectType {
-    name,
-    is_abstract,
-    is_final,
-    bases: { name },
-    ancestors: { name },
-    annotations: { name, @value },
-    links: {
-        name,
-        cardinality,
-        required,
-        target: { name },
-    },
-    properties: {
-        name,
-        cardinality,
-        required,
-        target: { name },
-    },
-    constraints: { name },
-    indexes: { name, expr },
-}"""
-
-non_standard_objects = """
-FILTER NOT contains(.name, 'cfg::')
-AND NOT contains(.name, 'schema::')
-AND NOT contains(.name, 'std::')
-AND NOT contains(.name, 'stdgraphql::')
-AND NOT contains(.name, 'sys::');"""
+    def merge_custom_scalar(self, module: str, scalar_definition) -> typing.NoReturn:
+        scalar = self.get_custom_scalar_schema(
+            module=module, scalar=scalar_definition.__name__
+        )[0]
+        attributes = {}
+        scalar_module, scalar_name = scalar.name.split("::")
+        default = scalar.default if scalar.default else None
+        attributes["__edbmodule__"] = attrib(default=scalar_module, type=str, repr=True)
+        attributes['value'] = attrib(default=None, type=typing.Optional[str])
+        attributes['default'] = attrib(default=default, type=typing.Optional[str])
+        new_class = make_class(
+            scalar_definition.__name__, attributes, bases=(scalar_definition,)
+        )
+        self._register_scalar(scalar_definition.__name__, new_class)
