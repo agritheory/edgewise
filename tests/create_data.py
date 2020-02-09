@@ -8,8 +8,12 @@ import os
 import edgewise
 
 
+# CREATE SCALAR TYPE Password EXTENDING str;
+
 user_schema = """
 CREATE MIGRATION init_user TO {
+    scalar type Password extending str;
+    scalar type Color extending enum<'black', 'white', 'red'>;
     MODULE example {
         type Company {
             required property name -> str;
