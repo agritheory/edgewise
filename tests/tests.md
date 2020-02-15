@@ -12,7 +12,9 @@ Edgewise is setup up to build and run from inside the official Docker image from
   - [ ] Single existing link, single new link
   - [ ] Multiple new link, multiple existing links
   - [ ] Multiple mixed and existing
-
-
+- [ ] Custom Scalar
+- [ ] Enum
+- [ ] Tuples and Named Tuples
+- [ ] Quart Integration Test
 
 ## Running the test suite
