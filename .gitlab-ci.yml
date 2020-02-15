@@ -1,0 +1,6 @@
+# image: edgedb:edgedb
+#
+# build:
+  # restore edgedb from dump
+  # run tests
+  # publish stats
