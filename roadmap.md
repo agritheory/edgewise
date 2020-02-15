@@ -4,29 +4,29 @@ A brain dump of ideas for this project, good and bad.
 
 ## Triage/ Bug Fixes
 - [ ] Handle `tuple` and `namedtuple` scalars explicitly
+  - Could be referenced as `tuple(object, property)` key in scalar registry
 - [x] Handle `enum` scalar as part of scalar registry
+- [X] Switch to ~~poetry~~ [DepHell](https://github.com/dephell/dephell)
+- [X] Make selectable sync/async interface.
+- [ ] Refactor schema queries to run synchronously, use and load a shared edgedb connection class
+- [X] Document alternative `python -X dev` which also allows `await`ing in the repl when async API is done
+- [ ] Docker >> Tox >> Tests >> GitLabCI config
 - [ ] Nested update - is this even a thing?
-- [ ] `ipython` with custom boot sequence
-- [ ] Make async interface (build `ipython` piece first for better manual testing)
-- [ ] Switch to poetry
-- [ ] Docker >> Test suite >> GitlabCI
 
 ## To Do/ Roadmap
+- [ ] Refactor IO to JSON (start with schema queries)
 - [x] Bind to app/ database connection pattern
-  - [ ] Use `ipython` with [custom boot sequence](https://ipython.readthedocs.io/en/stable/config/intro.html#setting-configurable-options) so there's a repl with native async methods available to you
-  - [ ] Make a command line command for this
 - [x] Get IOC mechanism and registry working
 - [x] Decorator to register non-edgeDB classes to work with `new_doc`
 - [x] `@scalar(object, property)` class decorator with pack and unpack methods
-- [ ] Register scalars in class registry (with schema query)
+- [X] Register scalars in class registry (with schema query)
 - [x] Add edgewise.new_scalar API
-- [ ] Use the same API for custom unpacking of tuple, namedtuple and enum
-- [ ] Mutation-only approach
+- [X] ~~Mutation-only approach~~ Private method updates only
 - [ ] ~~Shelve/ persist~~ Not sure this is required and may add needless complexity
-- [ ] Password scalar [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
+- [ ] Custom Password scalar [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
 - [ ] Provide esdl utilities for timestamping and user modification
 
-State Machine/ Trigger Integration
+### State Machine/ Trigger Integration
 
 - [ ] Use a state machine model to trigger python hooks
   - [ ] Use [transitions](https://github.com/pytransitions/transitions) library for FSM?
