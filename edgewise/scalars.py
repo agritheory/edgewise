@@ -1,12 +1,15 @@
 from __future__ import annotations
+
 import types
-from attr import attrs, attrib, make_class
 from datetime import datetime, timezone
-import edgedb
+from enum import IntEnum
 from typing import Optional
 from uuid import UUID
+
+import edgedb
+from attr import attrib, attrs, make_class
+
 import edgewise
-from enum import IntEnum
 
 
 @attrs
@@ -21,6 +24,7 @@ class CustomScalar:
 
 
 class DefaultEnum(IntEnum):
+    __edbmodule__: Optional[str] = None
     @classmethod
     def default(self):
         default = [member for member in self.__members__ if member == self._default]

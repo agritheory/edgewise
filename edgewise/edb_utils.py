@@ -1,8 +1,9 @@
-import edgedb
-import uuid
 import datetime
-import typing
 import decimal
+import typing
+import uuid
+
+import edgedb
 
 type_map = {
     "array": typing.Optional[edgedb.Array],
