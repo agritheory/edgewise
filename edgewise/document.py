@@ -1,18 +1,21 @@
 from __future__ import annotations
+
 import types
-from attr import attrs, attrib, make_class
 from datetime import datetime, timezone
-import edgedb
 from typing import Optional
 from uuid import UUID
+
+import edgedb
+from attr import attrib, attrs, make_class
+
 import edgewise
-from edgewise.queries import insert_query, update_query
+from edgewise.queries import insert_query, update_query, load_query
 
 
 @attrs
 class Document:
-    # __createdutc__ = attrib(default=None, type=Optional[datetime])
-    # __modifiedutc__ = attrib(default=None, type=Optional[datetime])
+    __createdutc__ = attrib(default=None, type=Optional[datetime])
+    __modifiedutc__ = attrib(default=None, type=Optional[datetime])
     __edbmodule__ = attrib(default=None, type=Optional[str])
     # __state__ = attrib(default=None, type=Optional[typing.Enum])
     _id = attrib(default=None, type=Optional[UUID])
@@ -25,10 +28,9 @@ class Document:
     def _id_is_immutable(self, attribute, value):
         raise AttributeError()
 
-    def _load(
-        self, filters: Union[None, dict, UUID]
-    ) -> Document:
-        data = self._load_query(filters)
+    async def _load(self, filters: typing.Optional[dict]) -> Document:
+        conn = await edgewise.class_registry.connect("async")
+        data = await conn.fetchall(load_query(self, filters))
         if not data:
             return None
         data = data[0] if isinstance(data, edgedb.Set) else data
@@ -40,30 +42,7 @@ class Document:
         }
         return self
 
-    def _load_query(self, filters) -> edgedb.Object:
-        if isinstance(filters, UUID):
-            fields = ",\n\t".join(self.__fields__)
-            load_query = f"""
-                WITH MODULE {self.__edbmodule__}
-                SELECT {self.__class__.__name__} {{
-                    {fields}
-                }}
-                FILTER .id = {uuid} LIMIT 1;"""
-            return edgewise.connect().fetchall(load_query)
-        elif filters:
-            fields = ",\n\t".join(self.__fields__)
-            filters = " AND ".join({f".{k} = '{v}'" for k, v in filters.items()})
-            load_query = f"""
-                WITH MODULE {self.__edbmodule__}
-                SELECT {self.__class__.__name__} {{
-                    {fields}
-                }}
-                FILTER {filters};"""
-            return edgewise.connect().fetchall(load_query)
-        else:
-            raise edgedb.MissingArgumentError
-
-    def save(self) -> Document:
+    async def save(self) -> Document:
         if not self.id:
             self.__modifiedutc__ = datetime.utcnow()
             self.__createdutc__ = datetime.utcnow()
@@ -71,20 +50,21 @@ class Document:
         else:
             self.__modifiedutc__ = datetime.utcnow()
             query = update_query(self)
-        print(query)
-        with edgewise.connect().transaction():
-            edgewise.connect().execute(query)
+        conn = await edgewise.class_registry.connect("async")
+        async with conn.transaction():
+            await conn.execute(query)
 
-    def delete(self):
-        self._delete()
+    async def delete(self):
+        await self._delete()
 
-    def _delete(self) -> typing.NoReturn:
+    async def _delete(self) -> typing.NoReturn:
         delete_query = f"""WITH MODULE {self.__edbmodule__}
             DELETE {self.__class__.__name__}
             FILTER .id = <uuid>'{self.id}'
         """
-        with edgewise.connect().transaction():
-            edgewise.connect().execute(delete_query)
+        conn = await edgewise.class_registry.connect("async")
+        async with conn.transaction():
+            await conn.execute(delete_query)
 
     @property
     def __fields__(self) -> typing.List[str]:
@@ -95,10 +75,14 @@ class Document:
             and not isinstance(self.__getattribute__(field), types.MethodType)
         ]
 
-    def __iter__(self) -> typing.Iterable[str]:
+    async def __aiter__(self) -> typing.Iterable[str]:
         for field in self.__fields__:
             yield self.__getattribute__(field)
 
-    def items(self) -> typing.Iterable[tuple]:
+    # def __iter__(self) -> typing.Iterable[str]:
+    #     for field in self.__fields__:
+    #         yield self.__getattribute__(field)
+
+    async def items(self) -> typing.Iterable[tuple]:
         for field in self.__fields__:
             yield (field, self.__getattribute__(field))
