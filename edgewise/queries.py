@@ -1,6 +1,33 @@
 from __future__ import annotations
+
 import typing
+
 import edgedb
+
+
+def load_query(doc, filters) -> edgedb.Object:
+    if ("id", "uuid") in filters:
+        fields = ",\n\t".join(doc.__fields__)
+        load_query = f"""
+            WITH MODULE {doc.__edbmodule__}
+            SELECT {doc.__class__.__name__} {{
+                {fields}
+            }}
+            FILTER .id = {uuid} LIMIT 1;"""
+        return load_query
+    elif filters:
+        fields = ",\n\t".join(doc.__fields__)
+        filters = " AND ".join({f".{k} = '{v}'" for k, v in filters.items()})
+        load_query = f"""
+            WITH MODULE {doc.__edbmodule__}
+            SELECT {doc.__class__.__name__} {{
+                {fields}
+            }}
+            FILTER {filters};"""
+        return load_query
+    else:
+        raise edgedb.MissingArgumentError
+
 
 
 def insert_query(doc):
