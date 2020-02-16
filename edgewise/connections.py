@@ -1,40 +1,88 @@
-import edgedb
-import dotenv
+from __future__ import annotations
+
 import os
 import typing
 
-
-def load_connection_from_environment() -> edgedb.con_utils.ConnectionParameters:
-    dotenv.load_dotenv()
-    return edgedb.con_utils.ConnectionParameters(
-        user=os.getenv("EDGEDB_USER", default="edgedb"),
-        password=os.getenv("EDGEDB_PASSWORD"),
-        database=os.getenv("EDGEDB_DATABASE", default="example"),
-        connect_timeout=os.getenv("EDGEDB_TIMEOUT", default="60"),
-        server_settings={"host": os.getenv("EDGEDB_HOST", default="localhost")},
-    )
+import dotenv
+import edgedb
+from attr import attrs
 
 
-def connect(
-    connection: typing.Optional[edgedb.con_utils.ConnectionParameters] = None,
-    sync_or_async: str = "async",
-) -> typing.Union[edgedb.BlockingIOConnection, edgedb.AsyncIOConnection]:
-    if sync_or_async == "async":
-        return connect_async(**connection)
-    return connect_sync(**connection)
+@attrs(slots=True, frozen=True, auto_attribs=True)
+class EdgeDBConnection:
+    dsn: typing.Optional[str] = os.getenv("EDGEDB_DSN", default=None)
+    host: typing.Optional[str] = os.getenv("EDGEDB_HOST", default="localhost")
+    port: int = os.getenv("EDGEDB_PORT", default=5656)
+    admin: typing.Optional[bool] = os.getenv("EDGEDB_ADMIN", default=False)
+    user: typing.Optional[str] = os.getenv("EDGEDB_USER")
+    password: typing.Optional[str] = os.getenv("EDGEDB_PASSWORD")
+    database: typing.Optional[str] = os.getenv("EDGEDB_DATABASE")
+    timeout: int = os.getenv("EDGEDB_TIMEOUT", default=60)
 
+    def __call__(
+        self, action: str = "async"
+    ) -> typing.Union[edgedb.BlockingIOConnection, edgedb.AsyncIOConnection]:
+        if action not in ("sync", "async"):
+            raise TypeError(
+                f"'Action' must be one of 'sync' or 'async'. You provided '{action}'"
+            )
+        if action == "async":
+            return self.connect_async()
+        return self.connect_sync()
 
-def connect_sync(
-    connection: typing.Optional[edgedb.con_utils.ConnectionParameters] = None,
-) -> edgedb.BlockingIOConnection:
-    if not connection:
-        connection = load_connection_from_environment()
-    return edgedb.connect(connection)
+    def connect_sync(
+        self,
+        connection: typing.Optional[EdgeDBConnection] = None,
+    ) -> edgedb.BlockingIOConnection:
+        return edgedb.connect(
+            dsn=self.dsn,
+            host=self.host,
+            port=self.port,
+            admin=self.admin,
+            user=self.user,
+            password=self.password,
+            database=self.database,
+            timeout=self.timeout,
+        )
 
+    async def connect_async(
+        self,
+        connection: typing.Optional[EdgeDBConnection] = None,
+    ) -> edgedb.AsyncIOConnection:
+        return await edgedb.async_connect(
+            dsn=self.dsn,
+            host=self.host,
+            port=self.port,
+            admin=self.admin,
+            user=self.user,
+            password=self.password,
+            database=self.database,
+            timeout=self.timeout,
+        )
 
-async def connect_async(
-    connection: typing.Optional[edgedb.con_utils.ConnectionParameters] = None,
-) -> edgedb.AsyncIOConnection:
-    if not connection:
-        connection = load_connection_from_environment()
-    return edgedb.connect_async(connection)
+    # not sure if this is needed
+    def close(self) -> typing.NoReturn:
+        edgedb.connect(
+            dsn=self.dsn,
+            host=self.host,
+            port=self.port,
+            admin=self.admin,
+            user=self.user,
+            password=self.password,
+            database=self.database,
+            timeout=self.timeout,
+        ).close()
+
+    # not sure if this is needed
+    def aclose(self) -> typing.NoReturn:
+        conn = await edgedb.connect_async(
+            dsn=self.dsn,
+            host=self.host,
+            port=self.port,
+            admin=self.admin,
+            user=self.user,
+            password=self.password,
+            database=self.database,
+            timeout=self.timeout,
+        )
+        await conn.aclose()
