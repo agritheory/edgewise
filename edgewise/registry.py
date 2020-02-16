@@ -1,33 +1,38 @@
 from __future__ import annotations
-from attr import attrs, attrib, make_class
-import edgedb
+
 import enum
-import dotenv
 import os
 import typing
-from .document import Document
-from .edb_utils import type_map
-from edgewise.utils import connect_sync
-from edgewise.queries import object_schema, enum_schema, custom_scalar_schema
-from edgewise.scalars import DefaultEnum, CustomScalar
+
+import dotenv
+import edgedb
+from attr import attrib, attrs, make_class
+
+from edgewise.connections import EdgeDBConnection
+from edgewise.document import Document
+from edgewise.edb_utils import type_map
+from edgewise.queries import custom_scalar_schema, enum_schema, object_schema
+from edgewise.scalars import CustomScalar, DefaultEnum
 
 
-@attrs  # (frozen=True)
+@attrs
 class ClassRegistry:
-    registry = attrib(default={})
-    database = attrib(default=None)
-    scalars = attrib(default={})
-    repr_timestamps = attrib(default=False)
+    registry = attrib(default={}, type=typing.Dict)
+    connect = attrib(default=None, type=EdgeDBConnection)
+    scalars = attrib(default={}, type=typing.Dict)
+    repr_timestamps = attrib(default=False, type=bool)
 
-    def __attrs_post_init__(self, connection: typing.Optional[edgedb.BlockingIOConnection] = None) -> typing.NoReturn:
-        self.database = connect_sync() if not connection else connection
+    def __attrs_post_init__(self) -> typing.NoReturn:
+        self.registration()
+
+    def registration(
+        self, connection: typing.Optional[EdgeDBConnection] = None
+    ) -> typing.NoReturn:
+        self.connect = connection if connection else EdgeDBConnection()
         self.build_classes(self.get_object_schema())
         self.build_enums(self.get_enum_schema())
         self.build_custom_scalars(self.get_custom_scalar_schema())
-        # scalars += self.build_collections(self.get_collections_schema())
 
-    # def mutate(self, key, value):  # better name update?
-    #     return attr.evolve(self, key=value)
     def new_doc(self, key: str, *args, **kwargs):
         cls = self.registry[key]
         return cls(*args, **kwargs)
@@ -39,27 +44,29 @@ class ClassRegistry:
         return cls(*args, **kwargs)
 
     def register(self, key: str, cls: type) -> typing.NoReturn:
+        if not self.registry.get(key):
+            self.registry[key] = cls
+
+    def _register(self, key: str, cls: type) -> typing.NoReturn:
+        if self.registry.get(key):
+            self.registry.pop(key)
         self.registry[key] = cls
 
     def _register_scalar(self, key: str, cls: type) -> typing.NoReturn:
-        print(key)
         self.scalars[key] = cls
 
-    def get_object_schema(self, module: typing.Optional[str] = None, object: typing.Optional[str] = None):
-        if object:
-            module = module if module else "default"
-            filter = f"\nFILTER .name = '{module}::{object}' LIMIT 1;" if object else ""
-            return self.database.fetchall(object_schema(filter))
-        return self.database.fetchall(object_schema())
+    def get_object_schema(self):
+        return self.connect("sync").fetchall(object_schema())
 
-    def get_enum_schema(self, module: typing.Optional[str] = None, enum: typing.Optional[str] = None):
-        return self.database.fetchall(enum_schema())
+    def get_enum_schema(
+        self, module: typing.Optional[str] = None, enum: typing.Optional[str] = None
+    ):
+        return self.connect("sync").fetchall(enum_schema())
 
-    def get_custom_scalar_schema(self, module: typing.Optional[str] = None, scalar: typing.Optional[str] = None):
-        return self.database.fetchall(custom_scalar_schema())
-
-    def get_custom_collection_schema(self, module: typing.Optional[str] = None, collection: typing.Optional[str] = None):
-        return self.database.fetchall(collection_schema())
+    def get_custom_scalar_schema(
+        self, module: typing.Optional[str] = None, scalar: typing.Optional[str] = None
+    ):
+        return self.connect("sync").fetchall(custom_scalar_schema())
 
     def build_classes(self, objects) -> typing.NoReturn:
         for obj in objects:
@@ -68,20 +75,28 @@ class ClassRegistry:
             new_class = make_class(object_name, attributes, bases=(Document,))
             self.register(object_name, new_class)
 
-    def merge_class(self, module, class_definition) -> typing.NoReturn:
-        obj = self.get_object_schema(module=module, object=class_definition.__name__)[0]
-        attributes = self._build_attributes(obj)
+    def merge_class(self, module: str, class_definition: object) -> typing.NoReturn:
+        filter = f"\nFILTER .name = '{module}::{class_definition.__name__}' LIMIT 1;"
+        obj = self.connect("sync").fetchall(object_schema(filter))
+        if not obj:
+            self.register(class_definition.__name__, class_definition)
+            return
+        attributes = self._build_attributes(
+            obj[0]
+        )  # LIMIT 1 rerturns a Set of 1 object
         new_class = make_class(
             class_definition.__name__, attributes, bases=(class_definition,)
         )
-        self.register(class_definition.__name__, new_class)
+        self._register(class_definition.__name__, new_class)
 
     def _build_attributes(self, obj: edgedb.Object) -> dict:
         object_module, object_name = obj.name.split("::")
         attributes = {}
-        attributes["__edbmodule__"] = attrib(default=object_module, type=str, repr=False)
+        attributes["__edbmodule__"] = attrib(
+            default=object_module, type=str, repr=False
+        )
         for prop in obj.properties:
-            if 'tuple' in prop.target.name:
+            if "tuple" in prop.target.name:
                 prop_type = prop.target.name
             else:
                 prop_type = type_map.get(prop.target.name.split("::")[1])
@@ -118,9 +133,11 @@ class ClassRegistry:
             attributes = {}
             scalar_module, scalar_name = scalar.name.split("::")
             default = scalar.default if scalar.default else None
-            attributes["__edbmodule__"] = attrib(default=scalar_module, type=str, repr=True)
-            attributes['value'] = attrib(default=None, type=typing.Optional[str])
-            attributes['default'] = attrib(default=default, type=typing.Optional[str])
+            attributes["__edbmodule__"] = attrib(
+                default=scalar_module, type=str, repr=True
+            )
+            attributes["value"] = attrib(default=None, type=typing.Optional[str])
+            attributes["default"] = attrib(default=default, type=typing.Optional[str])
             new_class = make_class(scalar_name, attributes, bases=(CustomScalar,))
             self._register_scalar(scalar_name, new_class)
 
@@ -132,8 +149,8 @@ class ClassRegistry:
         scalar_module, scalar_name = scalar.name.split("::")
         default = scalar.default if scalar.default else None
         attributes["__edbmodule__"] = attrib(default=scalar_module, type=str, repr=True)
-        attributes['value'] = attrib(default=None, type=typing.Optional[str])
-        attributes['default'] = attrib(default=default, type=typing.Optional[str])
+        attributes["value"] = attrib(default=None, type=typing.Optional[str])
+        attributes["default"] = attrib(default=default, type=typing.Optional[str])
         new_class = make_class(
             scalar_definition.__name__, attributes, bases=(scalar_definition,)
         )
