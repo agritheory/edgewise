@@ -8,7 +8,7 @@ A brain dump of ideas for this project, good and bad.
 - [x] Handle `enum` scalar as part of scalar registry
 - [X] Switch to ~~poetry~~ [DepHell](https://github.com/dephell/dephell)
 - [X] Make selectable sync/async interface.
-- [ ] Refactor schema queries to run synchronously, use and load a shared edgedb connection class
+- [X] Refactor schema queries to run synchronously, use and load a shared edgedb connection class
 - [X] Document alternative `python -X dev` which also allows `await`ing in the repl when async API is done
 - [ ] Docker >> Tox >> Tests >> GitLabCI config
 - [ ] Nested update - is this even a thing?
@@ -23,6 +23,7 @@ A brain dump of ideas for this project, good and bad.
 - [x] Add edgewise.new_scalar API
 - [X] ~~Mutation-only approach~~ Private method updates only
 - [ ] ~~Shelve/ persist~~ Not sure this is required and may add needless complexity
+- [ ] Add [async pooled connection](https://edgedb.com/docs/clients/00_python/api/asyncio_con#connection-pools) option 
 - [ ] Custom Password scalar [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
 - [ ] Provide esdl utilities for timestamping and user modification
 
