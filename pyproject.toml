@@ -16,13 +16,14 @@ license = 'Apache License, Version 2.0'
 classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python",
 ]
 
 [tool.dephell.dependencies]
-python = "^3.8"
+python = "^3.6"
 edgedb = "^0.7.1"
 attrs = "^19.3.0"
 python-dotenv = "^0.11.0"
@@ -37,6 +38,8 @@ black = "^19.*"
 isort = "^4.3.21"
 tox = "^3.14.3"
 typer = "^0.0.8"
+poetry = "^1.0.3"
+pytest-docker = "^0.7.2"
 
 [tool.dephell.scripts]
 edgewise = "edgewise.edgewise.cli:console"
@@ -44,3 +47,8 @@ edgewise = "edgewise.edgewise.cli:console"
 [tool.dephell.main]
 from = {format = "poetry", path = "pyproject.toml"}
 to = {format = "setuppy", path = "setup.py"}
+
+[tool.dephell.pytest]
+from = {format = "poetry", path = "pyproject.toml"}
+tests = ["tox", "README.md"]
+command = "pytest -x tests/"

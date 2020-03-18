@@ -8,8 +8,6 @@ import os
 import edgewise
 
 
-# CREATE SCALAR TYPE Password EXTENDING str;
-
 user_schema = """
 CREATE MIGRATION init_user TO {
     scalar type Password extending str;
@@ -27,7 +25,7 @@ CREATE MIGRATION init_user TO {
             property last_name -> str;
             property email -> str;
             required property username -> str;
-            required property password -> str;
+            required property password -> Password;
             multi link company -> Company;
             multi link rbac_role -> RBACRole;
         }
@@ -61,7 +59,7 @@ def create_user(save=False):
     user = edgewise.new_doc("User")
     user.first_name = person.name()
     user.last_name = person.last_name()
-    # user.email = person.email()
+    user.email = person.email()
     user.password = person.password()
     user.username = person.username()
     user.rbac_role = edgewise.new_doc("RBACRole", name='Database Administrator')

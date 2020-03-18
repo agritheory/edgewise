@@ -12,6 +12,7 @@ A brain dump of ideas for this project, good and bad.
 - [X] Document alternative `python -X dev` which also allows `await`ing in the repl when async API is done
 - [ ] Docker >> Tox >> Tests >> GitLabCI config
 - [ ] Nested update - is this even a thing?
+- [ ] Automatically cast everything to known type on update and insert
 
 ## To Do/ Roadmap
 - [ ] Refactor IO to JSON (start with schema queries)
@@ -21,11 +22,13 @@ A brain dump of ideas for this project, good and bad.
 - [x] `@scalar(object, property)` class decorator with pack and unpack methods
 - [X] Register scalars in class registry (with schema query)
 - [x] Add edgewise.new_scalar API
+- [ ] Read distinct constraints from schema to setup default primary key - save as __distinct__ property (set)?
 - [X] ~~Mutation-only approach~~ Private method updates only
 - [ ] ~~Shelve/ persist~~ Not sure this is required and may add needless complexity
-- [ ] Add [async pooled connection](https://edgedb.com/docs/clients/00_python/api/asyncio_con#connection-pools) option 
+- [ ] Add [async pooled connection](https://edgedb.com/docs/clients/00_python/api/asyncio_con#connection-pools) option
 - [ ] Custom Password scalar [Password IO](http://www.pythondiary.com/blog/Jan.13,2020/creating-transparently-encrypted-field-django.html)
 - [ ] Provide esdl utilities for timestamping and user modification
+- [ ] Add state machine for DB queries
 
 ### State Machine/ Trigger Integration
 

@@ -3,15 +3,19 @@ from __future__ import annotations
 import asyncio
 import typing
 from uuid import UUID
+import warnings
 
-from edgewise.document import Document
-from edgewise.registry import ClassRegistry
-from edgewise.scalars import CustomScalar, DefaultEnum
+from .document import Document
+from .view import EdgeDBView
+from .registry import ClassRegistry
+from .scalars import CustomScalar, DefaultEnum
 
 class_registry = ClassRegistry()
 
 
-def connect(action: str = 'async') -> typing.Union[edgedb.BlockingIOConnection, edgedb.AsyncIOConnection]:
+def connect(action: str = 'async') -> typing.Union[
+    edgedb.BlockingIOConnection, edgedb.AsyncIOConnection
+]:
     return class_registry.connect(action)
 
 
@@ -24,10 +28,6 @@ async def get_doc(cls: str, filters: typing.Union[UUID, dict]) -> Document:
     global class_registry
     _doc = class_registry.new_doc(cls)
     return await _doc._load(filters)
-
-
-def get_all(cls: str, filters=None) -> typing.Sequence[UUID]:
-    return
 
 
 def register(class_definition: typing.Type[Any], *args, **kwargs):
@@ -63,3 +63,17 @@ def register_scalar_with_schema(module: str):
         return scalar_definition
 
     return wrapped_registration
+
+
+async def get_all(cls: str, filters=None) -> typing.Sequence[UUID]:
+    warnings.warn(
+        'edgewise.get_all is not yet implemented and is here to reserve namespace'
+    )
+    return
+
+
+async def get_view(cls: str, filters=None) -> EdgeDBView:
+    warnings.warn(
+        'edgewise.get_view is not yet implemented and is here to reserve namespace'
+    )
+    return

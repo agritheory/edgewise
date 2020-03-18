@@ -15,7 +15,6 @@ def create_registry():
 async def index() -> str:
     new_doc = edgewise.new_doc("Company")
     doc = await edgewise.get_doc('Company', {'name': 'Fancy Business'})
-    # return str(dir(doc))
     return f"{doc.__repr__} {doc.your_class_method()}"
 
 

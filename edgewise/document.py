@@ -14,8 +14,8 @@ from edgewise.queries import insert_query, update_query, load_query
 
 @attrs
 class Document:
-    __createdutc__ = attrib(default=None, type=Optional[datetime])
-    __modifiedutc__ = attrib(default=None, type=Optional[datetime])
+    # __createdutc__ = attrib(default=None, type=Optional[datetime])
+    # __modifiedutc__ = attrib(default=None, type=Optional[datetime])
     __edbmodule__ = attrib(default=None, type=Optional[str])
     # __state__ = attrib(default=None, type=Optional[typing.Enum])
     _id = attrib(default=None, type=Optional[UUID])

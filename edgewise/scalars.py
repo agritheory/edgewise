@@ -9,8 +9,6 @@ from uuid import UUID
 import edgedb
 from attr import attrib, attrs, make_class
 
-import edgewise
-
 
 @attrs
 class CustomScalar:
@@ -32,3 +30,25 @@ class DefaultEnum(IntEnum):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name='{self.name}', value={self.value}, default={self.name == self._default})"
+
+
+@attrs
+class TupleScalar:
+    __edbmodule__ = attrib(default=None, type=Optional[str])
+
+    def pack(self):
+        pass
+
+    def unpack(self):
+        pass
+
+
+@attrs
+class NamedTupleScalar:
+    __edbmodule__ = attrib(default=None, type=Optional[str])
+
+    def pack(self):
+        pass
+
+    def unpack(self):
+        pass

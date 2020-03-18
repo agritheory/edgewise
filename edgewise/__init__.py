@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from .connections import EdgeDBConnection
+from .document import Document
+from .scalars import CustomScalar, DefaultEnum
 from .edgewise import (
-    CustomScalar,
-    DefaultEnum,
-    Document,
     class_registry,
     connect,
     get_doc,

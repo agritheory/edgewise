@@ -9,44 +9,52 @@ try:
 except ImportError:
     from distutils.core import setup
 
-import os.path
-
 readme = ''
-here = os.path.abspath(os.path.dirname(__file__))
-readme_path = os.path.join(here, 'readme.rst')
-if os.path.exists(readme_path):
-    with open(readme_path, 'rb') as stream:
-        readme = stream.read().decode('utf8')
 
 setup(
     long_description=readme,
-    name='edgewise',
-    version='0.1.0',
-    description='An Active Record ORM for EdgeDB',
-    python_requires='>=3.7.0',
-    project_urls={"repository": "https://gitlab.com/agritheory/edgewise"},
-    author='Tyler Matteson',
-    author_email='tyler@agritheory.com',
-    license='Apache License, Version 2.0',
-    classifiers=[
-        'Intended Audience :: Developers', 'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python'
+    name='edgedbdoc',
+    version='0.0.0',
+    packages=[
+        'edgedbdoc', 'edgedbdoc.edgewise',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip._vendor',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.commands',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.compat',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.models',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.operations',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.req',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.utils',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.vcs',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources._vendor',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources._vendor.packaging',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources.extern',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools._vendor',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools._vendor.packaging',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools.command',
+        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools.extern'
     ],
-    entry_points={
-        "console_scripts": ["edgewise = edgwise.edgewise.cli:console"]
-    },
-    install_requires=[
-        'attrs==19.*,>=19.3.0', 'edgedb==0.*,>=0.7.1',
-        'python-dotenv==0.*,>=0.11.0'
-    ],
-    extras_require={
-        "dev": [
-            "black==19.*,>=19.10.0", "ipython==7.*,>=7.12.0",
-            "isort==4.*,>=4.3.21", "mypy==0.*,>=0.761.0", "pytest==4.*,>=4.6.0",
-            "pytest-cov==2.*,>=2.8.1", "pytest-mypy==0.*,>=0.4.2",
-            "tox==3.*,>=3.14.3", "typer==0.*,>=0.0.8"
+    package_dir={"edgedbdoc": ""},
+    package_data={
+        "edgedbdoc": ["*.ini", "*.md", "*.toml", "edgewise.egg-info/*.txt"],
+        "edgedbdoc.edgewise": [
+            "lib/python3.6/site-packages/pip-9.0.1.dist-info/*.json",
+            "lib/python3.6/site-packages/pip-9.0.1.dist-info/*.rst",
+            "lib/python3.6/site-packages/pip-9.0.1.dist-info/*.txt",
+            "lib/python3.6/site-packages/pkg_resources-0.0.0.dist-info/*.json",
+            "lib/python3.6/site-packages/pkg_resources-0.0.0.dist-info/*.rst",
+            "lib/python3.6/site-packages/setuptools-39.0.1.dist-info/*.json",
+            "lib/python3.6/site-packages/setuptools-39.0.1.dist-info/*.rst",
+            "lib/python3.6/site-packages/setuptools-39.0.1.dist-info/*.txt"
+        ],
+        "edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools": [
+            "*.exe", "*.tmpl"
+        ],
+        "edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools.command": [
+            "*.xml"
         ]
     },
+    install_requires=[],
 )

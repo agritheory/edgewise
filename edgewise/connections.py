@@ -74,7 +74,7 @@ class EdgeDBConnection:
         ).close()
 
     # not sure if this is needed
-    def aclose(self) -> typing.NoReturn:
+    async def aclose(self) -> typing.NoReturn:
         conn = await edgedb.connect_async(
             dsn=self.dsn,
             host=self.host,

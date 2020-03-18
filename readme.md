@@ -29,9 +29,9 @@ This library is designed to be used as an Active Record style Object Relational 
 
 ## Getting Started
 ### Prerequisites
-This library uses python >3.8 and requires that EdgeDB be installed. Follow the [installation instructions](https://edgedb.com/docs/tutorial/install) given in the EdgeDB documentation.
+This library uses python >3.6 and requires that EdgeDB be installed. Follow the [installation instructions](https://edgedb.com/docs/tutorial/install) given in the EdgeDB documentation.
 
-This library [asyncio](https://docs.python.org/3/library/asyncio.html) by default and generally defers to it whenever possible. See the [async is awesome](#async-is-awesome) and [Quart example](#quart-example) for more details.
+Edgewise is [asyncio](https://docs.python.org/3/library/asyncio.html) by default and generally defers to it whenever possible. See the [async is awesome](#async-is-awesome) and [Quart example](#quart-example) for more details.
 
 ### Why?
 The EdgeDB python library is intended to be relatively low-level and high performance. This library is designed to be intuitive and help you access and manipulate documents quickly in a object oriented style. If you're doing a large application with EdgeDB you should be prepared to use both libraries.
@@ -43,8 +43,7 @@ This library is not yet on pypi
 ```bash
 python -m pip install edgewise
 ```
-If you've read this far you know that you should use a virtual environment and you should do that however you like. But you should do it. For development this project uses Poetry.
-
+If you've read this far you know that you should use a virtual environment and you should do that however you like. But you should do it.
 
 ## Using Edgewise
 ### How it Works
@@ -184,7 +183,7 @@ Why DepHell? It's agnostic, feature-rich and lets you choose the formats you wan
 
 ### Project Utilities
  - [ ] Save your schema, class registrations and scalars in an organized way
- - [ ] See [Projects](projects.md) 
+ - [ ] See [Projects](projects.md)
 
 ### Contributing
 
