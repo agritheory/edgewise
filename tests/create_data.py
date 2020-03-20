@@ -1,12 +1,7 @@
-import asyncio
-import click
 import edgedb
 import mimesis
-from examples.example import connect_to_example_db
-import dotenv
-import os
-import edgewise
 
+import edgewise
 
 user_schema = """
 CREATE MIGRATION init_user TO {

@@ -3,13 +3,15 @@ from __future__ import annotations
 import os
 import typing
 
-import dotenv
+from dotenv import load_dotenv
 import edgedb
 from attr import attrs
 
 
 @attrs(slots=True, frozen=True, auto_attribs=True)
-class EdgeDBConnection:
+class EdgeDBConnection: # NOTE - For some reason this is being called on import, not on instantiation
+    load_dotenv()
+    # SUGGESTION - Should take params instead of pulling from env
     dsn: typing.Optional[str] = os.getenv("EDGEDB_DSN", default=None)
     host: typing.Optional[str] = os.getenv("EDGEDB_HOST", default="localhost")
     port: int = os.getenv("EDGEDB_PORT", default=5656)

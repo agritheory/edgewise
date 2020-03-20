@@ -68,3 +68,4 @@ dmypy.json
 .env
 .venv
 .dephell_report
+.vscode

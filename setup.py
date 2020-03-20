@@ -13,48 +13,9 @@ readme = ''
 
 setup(
     long_description=readme,
-    name='edgedbdoc',
-    version='0.0.0',
-    packages=[
-        'edgedbdoc', 'edgedbdoc.edgewise',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip._vendor',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.commands',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.compat',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.models',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.operations',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.req',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.utils',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pip.vcs',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources._vendor',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources._vendor.packaging',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.pkg_resources.extern',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools._vendor',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools._vendor.packaging',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools.command',
-        'edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools.extern'
-    ],
-    package_dir={"edgedbdoc": ""},
-    package_data={
-        "edgedbdoc": ["*.ini", "*.md", "*.toml", "edgewise.egg-info/*.txt"],
-        "edgedbdoc.edgewise": [
-            "lib/python3.6/site-packages/pip-9.0.1.dist-info/*.json",
-            "lib/python3.6/site-packages/pip-9.0.1.dist-info/*.rst",
-            "lib/python3.6/site-packages/pip-9.0.1.dist-info/*.txt",
-            "lib/python3.6/site-packages/pkg_resources-0.0.0.dist-info/*.json",
-            "lib/python3.6/site-packages/pkg_resources-0.0.0.dist-info/*.rst",
-            "lib/python3.6/site-packages/setuptools-39.0.1.dist-info/*.json",
-            "lib/python3.6/site-packages/setuptools-39.0.1.dist-info/*.rst",
-            "lib/python3.6/site-packages/setuptools-39.0.1.dist-info/*.txt"
-        ],
-        "edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools": [
-            "*.exe", "*.tmpl"
-        ],
-        "edgedbdoc.edgewise.lib.python3.6.site-packages.setuptools.command": [
-            "*.xml"
-        ]
-    },
-    install_requires=[],
+    name='edgewise',
+    version='0.0.1',
+    author="Tyler Matteson",
+    packages=setuptools.find_packages(),
+    python_requires='>3.8'
 )

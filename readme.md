@@ -39,11 +39,11 @@ The EdgeDB python library is intended to be relatively low-level and high perfor
 In my experience, EdgeDB SDL is one of the most intuitive ways to define schema, especially one with nested objects/tables and types. This library takes the approach that you should design your schema in its native language (EdgeDB SDL or DDL) and access it in the way that's easiest for you
 
 ### Installing
-This library is not yet on pypi
-```bash
-python -m pip install edgewise
-```
-If you've read this far you know that you should use a virtual environment and you should do that however you like. But you should do it.
+Note - This library is not on PyPI (yet), you will have to install it from source
+
+- Clone the repository
+- Create a python virtual environment (optional but recommended)
+- Install into env by running `pip install -e ./path/to/repo`
 
 ## Using Edgewise
 ### How it Works

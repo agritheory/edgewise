@@ -1,6 +1,15 @@
-# image: edgedb:edgedb
-#
-# build:
-  # restore edgedb from dump
-  # run tests
-  # publish stats
+image: edgedb/edgedb
+
+stages:
+  - test
+
+testing_connection:
+  stage: test
+  before_script:
+    - pip install -r requirements.txt
+  script:
+    - python -m tests.test_connection
+
+variables:
+  EDGEDB_USER: "edgedb"
+  EDGEDB_DATABASE: "edgedb"
