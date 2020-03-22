@@ -4,6 +4,7 @@ import asyncio
 import typing
 from uuid import UUID
 import warnings
+from attr import attrs
 
 from .document import Document
 from .view import EdgeDBView
