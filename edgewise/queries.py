@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing
+from collections import namedtuple
 
 import edgedb
 
@@ -27,7 +28,6 @@ def load_query(doc, filters) -> edgedb.Object:
         return load_query
     else:
         raise edgedb.MissingArgumentError
-
 
 
 def insert_query(doc):
@@ -62,8 +62,8 @@ def insert_attribute(doc, k: str, v: typing.Optional[typing.Any], query: str):
     elif hasattr(v, '__edbmodule__') and v.__module__ == 'edgewise.registry':
         # single linked class inherited from Document
         return f"\t{k} := {nested_single_link(v)},\n"
-    elif isinstance(v, (tuple, namedtuple)):
-        pass  # wip
+    # elif isinstance(v, tuple):
+    #     pass  # wip
     else:
         return f"\t{k} := '{v}',\n"
 

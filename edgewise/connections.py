@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import typing
 
-from dotenv import load_dotenv
 import edgedb
 from attr import attrs
 
