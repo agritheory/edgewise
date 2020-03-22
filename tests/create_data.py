@@ -10,26 +10,26 @@ import edgewise
 
 user_schema = """
 CREATE MIGRATION init_user TO {
-    scalar type Password extending str;
-    scalar type Color extending enum<'black', 'white', 'red'>;
-    MODULE example {
-        type Company {
-            required property name -> str;
-            property country  -> str;
-        }
-        type RBACRole {
-          required property name -> str;
-        }
-        type User {
-            property first_name -> str;
-            property last_name -> str;
-            property email -> str;
-            required property username -> str;
-            required property password -> Password;
-            multi link company -> Company;
-            multi link rbac_role -> RBACRole;
-        }
+  MODULE example {
+        scalar type Password extending str;
+        scalar type Color extending enum<'black', 'white', 'red'>;
+    type Company {
+        required property name -> str;
+        property country  -> str;
     }
+    type RBACRole {
+      required property name -> str;
+    }
+    type User {
+        property first_name -> str;
+        property last_name -> str;
+        property email -> str;
+        required property username -> str;
+        required property password -> Password;
+        multi link company -> Company;
+        multi link rbac_role -> RBACRole;
+    }
+  }
 };
 COMMIT MIGRATION init_user;
 """

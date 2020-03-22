@@ -31,7 +31,22 @@ A brain dump of ideas for this project, good and bad.
 - [X] ~~Mutation-only approach~~ Private method updates only
 - [ ] Provide esdl utilities for timestamping and user modification - use inheritance of timestamped object
 
+### Further work and examples:
+
+- [ ] Quart, POP and Starlette examples
+- [ ] Load test/ benchmark and optimize
+- [ ] CLI to create boilerplate edsl and python file and class, .vue, selections available
+  - [ ] This is a good case for Bullet
+- [ ] Export schema to `module` folder (boilerplate/ create app structure)
+
+
+- [ ] GUI (framework.../ VueCLI type thing?) => part of EdgewiseJS
+- [ ] Generate Entity Relation Charts from schema => part of EdgewiseJS
+
+
 ### State Machine/ Trigger Integration
+
+This should be a separate library, but included in the larger application
 - [ ] Add state machine for DB queries
 - [ ] Use a state machine model to trigger python hooks
   - [ ] Use [transitions](https://github.com/pytransitions/transitions) library for FSM?
@@ -41,12 +56,3 @@ A brain dump of ideas for this project, good and bad.
     - [ ] Init, Before Insert, After Insert, Before Update, After Update, Before Delete, After Delete
     - [ ] Custom example would be "Before Submit, "After Submit"
     - [ ] Another would be adding an "Approve" step
-
-Further work and examples:
-
-- [ ] Quart, POP and Starlette examples
-- [ ] Load test/ benchmark and optimize
-- [ ] GUI (framework.../ VueCLI type thing?)
-- [ ] ~~Command line doctype creation?~~ There's no strong reason to to this, EdgeDB's SDL is better than anything that could be accomplished on the command line. Maybe to create boilerplate edsl and class, helps with app structure
-- [ ] Export schema to `module` folder
-- [ ] Generate Entity Relation Charts from schema, though this should really be part of an equivalent JS/TS project? `edgewise.js` -> seems worth it to have matching APIs
