@@ -4,7 +4,6 @@ import enum
 import os
 import typing
 
-import dotenv
 import edgedb
 from attr import attrib, attrs, make_class
 
@@ -17,18 +16,12 @@ from edgewise.scalars import CustomScalar, DefaultEnum
 
 @attrs
 class ClassRegistry:
-    registry = attrib(default={}, type=typing.Dict)
     connect = attrib(default=None, type=EdgeDBConnection)
+    registry = attrib(default={}, type=typing.Dict)
     scalars = attrib(default={}, type=typing.Dict)
     repr_timestamps = attrib(default=False, type=bool)
 
     def __attrs_post_init__(self) -> typing.NoReturn:
-        self.registration()
-
-    def registration(
-        self, connection: typing.Optional[EdgeDBConnection] = None
-    ) -> typing.NoReturn:
-        self.connect = connection
         if self.connect is not None:
             self.build_classes(self.get_object_schema())
             self.build_enums(self.get_enum_schema())
@@ -57,17 +50,23 @@ class ClassRegistry:
         self.scalars[key] = cls
 
     def get_object_schema(self):
-        return self.connect("sync").fetchall(object_schema())
+        objects = self.connect("sync").fetchall(object_schema())
+        self.connect.close()
+        return objects
 
     def get_enum_schema(
         self, module: typing.Optional[str] = None, enum: typing.Optional[str] = None
     ):
-        return self.connect("sync").fetchall(enum_schema())
+        enums = self.connect("sync").fetchall(enum_schema())
+        self.connect.close()
+        return enums
 
     def get_custom_scalar_schema(
         self, module: typing.Optional[str] = None, scalar: typing.Optional[str] = None
     ):
-        return self.connect("sync").fetchall(custom_scalar_schema())
+        scalars = self.connect("sync").fetchall(custom_scalar_schema())
+        self.connect.close()
+        return scalars
 
     def build_classes(self, objects) -> typing.NoReturn:
         for obj in objects:
