@@ -83,6 +83,10 @@ class Document:
     #     for field in self.__fields__:
     #         yield self.__getattribute__(field)
 
-    async def items(self) -> typing.Iterable[tuple]:
+    def items(self) -> typing.Iterable[tuple]:
+        for field in self.__fields__:
+            yield (field, self.__getattribute__(field))
+
+    async def aitems(self) -> typing.Iterable[tuple]:
         for field in self.__fields__:
             yield (field, self.__getattribute__(field))
