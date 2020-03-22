@@ -28,10 +28,11 @@ class ClassRegistry:
     def registration(
         self, connection: typing.Optional[EdgeDBConnection] = None
     ) -> typing.NoReturn:
-        self.connect = connection if connection else EdgeDBConnection()
-        self.build_classes(self.get_object_schema())
-        self.build_enums(self.get_enum_schema())
-        self.build_custom_scalars(self.get_custom_scalar_schema())
+        self.connect = connection
+        if self.connect is not None:
+            self.build_classes(self.get_object_schema())
+            self.build_enums(self.get_enum_schema())
+            self.build_custom_scalars(self.get_custom_scalar_schema())
 
     def new_doc(self, key: str, *args, **kwargs):
         cls = self.registry[key]

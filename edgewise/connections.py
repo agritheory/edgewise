@@ -9,17 +9,15 @@ from attr import attrs
 
 
 @attrs(slots=True, frozen=True, auto_attribs=True)
-class EdgeDBConnection: # NOTE - For some reason this is being called on import, not on instantiation
-    load_dotenv()
-    # SUGGESTION - Should take params instead of pulling from env
-    dsn: typing.Optional[str] = os.getenv("EDGEDB_DSN", default=None)
-    host: typing.Optional[str] = os.getenv("EDGEDB_HOST", default="localhost")
-    port: int = os.getenv("EDGEDB_PORT", default=5656)
-    admin: typing.Optional[bool] = os.getenv("EDGEDB_ADMIN", default=False)
-    user: typing.Optional[str] = os.getenv("EDGEDB_USER")
-    password: typing.Optional[str] = os.getenv("EDGEDB_PASSWORD")
-    database: typing.Optional[str] = os.getenv("EDGEDB_DATABASE")
-    timeout: int = os.getenv("EDGEDB_TIMEOUT", default=60)
+class EdgeDBConnection:
+    dsn: typing.Optional[str] = None
+    host: typing.Optional[str] = None
+    port: int = 5656
+    admin: typing.Optional[bool] = False
+    user: typing.Optional[str] = None
+    password: typing.Optional[str] = None
+    database: typing.Optional[str] = None
+    timeout: int = 60
 
     def __call__(
         self, action: str = "async"
