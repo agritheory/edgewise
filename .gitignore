@@ -32,16 +32,6 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -56,16 +46,15 @@ coverage.xml
 .pytest_cache/
 bin/
 
-# pyenv
-.python-version
-poetry.lock
 
 # mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
+# Pipenv
+Pipfile.lock
+
 .env
 .venv
-.dephell_report
 .vscode

@@ -1,5 +1,0 @@
-edgedb
-attrs
-python-dotenv
-quart
-mimesis
