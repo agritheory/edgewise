@@ -18,16 +18,25 @@ class Password(CustomScalar):
         return f"Password(******)"
 
 
-@pytest.mark.usefixtures('class_registry')
 @pytest.mark.asyncio
 async def test_random_scalar():
     random_scalar = await edgewise.new_doc('RandomScalar')
     assert random_scalar.print_something() == 'Something!'
 
 
-@pytest.mark.usefixtures('class_registry')
+# @pytest.mark.usefixtures('class_registry')
 @pytest.mark.asyncio
 async def test_register_scalar_with_schema():
+    # edgewise.class_registry = class_registry
     custom_scalar = await edgewise.new_scalar('Password')
     custom_scalar = 'mypassword'
     assert custom_scalar.__str__() == 'Password(******)'
+
+
+# add test for enum
+
+# add test for tuple
+
+# add test for named tuple
+
+# add test for array

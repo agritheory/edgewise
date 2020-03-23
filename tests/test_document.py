@@ -16,3 +16,10 @@ class DocumentNotInDatabase(Document):
 class Company(Document):
     def your_class_method(self) -> str:
         return "A class method method!"
+
+
+@pytest.mark.usefixtures('class_registry')
+@pytest.mark.asyncio
+async def test_DocumentNotInDatabase():
+    doc = await edgewise.new_doc('DocumentNotInDatabase')
+    assert isinstance(doc, DocumentNotInDatabase)

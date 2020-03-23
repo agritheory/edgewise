@@ -12,18 +12,20 @@ def get_connection_object():
         user="edgedb",
         password="edgedb",
         database="edgedb",
-        timeout=60
+        timeout=60,
     )
 
 
-@pytest.fixture(scope='session')
+def pytest_configure(config):
+    connection_object = get_connection_object()
+    edgewise.class_registry = edgewise.ClassRegistry(connection_object)
+    print("Registered Classes:")
+    [
+        print("{}: {}".format(key, value))
+        for key, value in edgewise.class_registry.registry.items()
+    ]
+
+
+@pytest.fixture(scope="module")
 def connection_object():
     return get_connection_object()
-
-
-@pytest.fixture(scope="session")
-def class_registry():
-    edgewise.class_registry = edgewise.ClassRegistry(
-        connect=get_connection_object()
-    )
-    print(edgewise.class_registry)
