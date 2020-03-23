@@ -7,6 +7,7 @@ verify_ssl = true
 pytest = "*"
 mimesis = "*"
 pytest-asyncio = "*"
+pytest-cov = "*"
 
 [packages]
 edgedb = "*"
