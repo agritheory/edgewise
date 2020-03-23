@@ -6,6 +6,7 @@ Edgewise is setup up to build and run with the official Docker image from EdgeDB
 - [X] Test connections
 - [ ] Document
 - [X] Create example data with Mimesis, saving it to the database (integration test)
+- [ ] Restore known database with `edgedb restore test_dump -u edgedb --password-from-stdin edgedb -d edgewise-test`
 - [ ] Unit Test `register`
 - [ ] Unit Test `register_with_schema`
 - [ ] Unit Test `register_scalar`
