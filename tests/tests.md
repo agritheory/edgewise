@@ -1,18 +1,23 @@
 # Testing Edgewise
 
-Edgewise is setup up to build and run with the official Docker image from EdgeDB.
+Edgewise uses CircleCI.
+- [ ] Add instructions for running CircleCI locally
 
 ## To Do:
 - [X] Test connections
 - [ ] Document
+- [ ] Precommit hooks for `black` and `isort`
+- [ ] Add mypy to testing suite
 - [X] Create example data with Mimesis, saving it to the database (integration test)
-- [ ] Restore known database with `edgedb restore test_dump -u edgedb --password-from-stdin edgedb -d edgewise-test`
+- [ ] Restore known database with `edgedb restore test_dump -u edgedb --password-from-stdin edgedb -d edgewise`
 - [ ] Unit Test `register`
 - [ ] Unit Test `register_with_schema`
 - [ ] Unit Test `register_scalar`
 - [ ] Unit Test `register_scalar_with_schema`
 - [ ] Custom Scalar (not in database)
 - [ ] Custom Scalar (password)
+- [ ] Add Password Scalar to User object
+- [ ] Refactor Enum to something useful for User to put it in context
 - [ ] Enum
 - [ ] Tuple
 - [ ] Named Tuple

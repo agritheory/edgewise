@@ -8,6 +8,7 @@ pytest = "*"
 mimesis = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
+pre-commit = "*"
 
 [packages]
 edgedb = "*"
