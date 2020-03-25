@@ -52,3 +52,20 @@ to = {format = "setuppy", path = "setup.py"}
 from = {format = "poetry", path = "pyproject.toml"}
 tests = ["tox", "README.md"]
 command = "pytest -x tests/"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
