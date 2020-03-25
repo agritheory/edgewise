@@ -30,8 +30,7 @@ class EdgeDBConnection:
         return self.connect_sync()
 
     def connect_sync(
-        self,
-        connection: typing.Optional[EdgeDBConnection] = None,
+        self, connection: typing.Optional[EdgeDBConnection] = None,
     ) -> edgedb.BlockingIOConnection:
         return edgedb.connect(
             dsn=self.dsn,
@@ -45,8 +44,7 @@ class EdgeDBConnection:
         )
 
     async def connect_async(
-        self,
-        connection: typing.Optional[EdgeDBConnection] = None,
+        self, connection: typing.Optional[EdgeDBConnection] = None,
     ) -> edgedb.AsyncIOConnection:
         return await edgedb.async_connect(
             dsn=self.dsn,

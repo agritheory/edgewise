@@ -14,9 +14,9 @@ from .scalars import CustomScalar, DefaultEnum
 class_registry = ClassRegistry()
 
 
-def connect(action: str = 'async') -> typing.Union[
-    edgedb.BlockingIOConnection, edgedb.AsyncIOConnection
-]:
+def connect(
+    action: str = "async",
+) -> typing.Union[edgedb.BlockingIOConnection, edgedb.AsyncIOConnection]:
     return class_registry.connect(action)
 
 
@@ -68,13 +68,13 @@ def register_scalar_with_schema(module: str):
 
 async def get_all(cls: str, filters=None) -> typing.Sequence[UUID]:
     warnings.warn(
-        'edgewise.get_all is not yet implemented and is here to reserve namespace'
+        "edgewise.get_all is not yet implemented and is here to reserve namespace"
     )
     return
 
 
 async def get_view(cls: str, filters=None) -> EdgeDBView:
     warnings.warn(
-        'edgewise.get_view is not yet implemented and is here to reserve namespace'
+        "edgewise.get_view is not yet implemented and is here to reserve namespace"
     )
     return

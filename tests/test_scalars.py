@@ -12,7 +12,7 @@ class RandomScalar(CustomScalar):
 
 
 @attrs
-@register_scalar_with_schema(module='example')
+@register_scalar_with_schema(module="example")
 class Password(CustomScalar):
     def print_password(self):
         return f"Password(******)"
@@ -20,17 +20,17 @@ class Password(CustomScalar):
 
 @pytest.mark.asyncio
 async def test_random_scalar():
-    random_scalar = await edgewise.new_doc('RandomScalar')
-    assert random_scalar.print_something() == 'Something!'
+    random_scalar = await edgewise.new_doc("RandomScalar")
+    assert random_scalar.print_something() == "Something!"
 
 
 # @pytest.mark.usefixtures('class_registry')
 @pytest.mark.asyncio
 async def test_register_scalar_with_schema():
     # edgewise.class_registry = class_registry
-    custom_scalar = await edgewise.new_scalar('Password')
-    custom_scalar = 'mypassword'
-    assert custom_scalar.__str__() == 'Password(******)'
+    custom_scalar = await edgewise.new_scalar("Password")
+    custom_scalar = "mypassword"
+    assert custom_scalar.__str__() == "Password(******)"
 
 
 # add test for enum

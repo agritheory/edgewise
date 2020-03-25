@@ -23,6 +23,7 @@ class CustomScalar:
 
 class DefaultEnum(IntEnum):
     __edbmodule__: Optional[str] = None
+
     @classmethod
     def default(self):
         default = [member for member in self.__members__ if member == self._default]

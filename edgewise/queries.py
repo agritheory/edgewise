@@ -31,16 +31,14 @@ def load_query(doc, filters) -> edgedb.Object:
 
 
 def insert_query(doc):
-    query = (
-        f"WITH MODULE {doc.__edbmodule__} INSERT {doc.__class__.__name__} {{ \n"
-    )
+    query = f"WITH MODULE {doc.__edbmodule__} INSERT {doc.__class__.__name__} {{ \n"
     for k, v in doc.items():
         query += insert_attribute(doc, k, v, query)
     return query + "\n};"
 
 
 def update_query(doc):
-    values = ''
+    values = ""
     for k, v in doc.items():
         values += insert_attribute(doc, k, v, query)
     return f"""
@@ -55,11 +53,11 @@ def update_query(doc):
 
 def insert_attribute(doc, k: str, v: typing.Optional[typing.Any], query: str):
     if not v or k in ("id", "_id"):  # let EdgeDB assign object's UUID
-        return ''
+        return ""
     elif isinstance(v, (set, list, edgedb.Array)):  # multi link Document
-        sub_query = ''.join([nested_multi_link(list_item) for list_item in v])
+        sub_query = "".join([nested_multi_link(list_item) for list_item in v])
         return f"\t{k} := {subquery},\n"
-    elif hasattr(v, '__edbmodule__') and v.__module__ == 'edgewise.registry':
+    elif hasattr(v, "__edbmodule__") and v.__module__ == "edgewise.registry":
         # single linked class inherited from Document
         return f"\t{k} := {nested_single_link(v)},\n"
     # elif isinstance(v, tuple):
@@ -114,11 +112,16 @@ def object_schema(filter: str = "") -> str:
         indexes: { name, expr },
     }
     """
-    return schema_query + filter if filter else schema_query + "\nFILTER "  + NON_STANDARD_OBJECTS
+    return (
+        schema_query + filter
+        if filter
+        else schema_query + "\nFILTER " + NON_STANDARD_OBJECTS
+    )
 
 
 def enum_schema() -> str:
-    return """
+    return (
+        """
     WITH MODULE schema
     SELECT ScalarType {
         name,
@@ -127,11 +130,15 @@ def enum_schema() -> str:
         annotations: { name, @value },
         constraints: { name },
     }
-    FILTER EXISTS .enum_values""" + " AND " + NON_STANDARD_OBJECTS
+    FILTER EXISTS .enum_values"""
+        + " AND "
+        + NON_STANDARD_OBJECTS
+    )
 
 
 def custom_scalar_schema() -> str:
-    return """
+    return (
+        """
     WITH MODULE schema
     SELECT ScalarType {
         name,
@@ -139,7 +146,9 @@ def custom_scalar_schema() -> str:
         annotations: { name, @value },
         constraints: { name },
     }
-    FILTER NOT EXISTS .enum_values AND """ + NON_STANDARD_OBJECTS
+    FILTER NOT EXISTS .enum_values AND """
+        + NON_STANDARD_OBJECTS
+    )
 
 
 NON_STANDARD_OBJECTS = """NOT contains(.name, 'cfg::')

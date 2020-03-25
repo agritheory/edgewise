@@ -9,13 +9,13 @@ try:
 except ImportError:
     from distutils.core import setup
 
-readme = ''
+readme = ""
 
 setup(
     long_description=readme,
-    name='edgewise',
-    version='0.0.1',
+    name="edgewise",
+    version="0.0.1",
     author="Tyler Matteson",
     packages=setuptools.find_packages(),
-    python_requires='>3.8'
+    python_requires=">3.8",
 )

@@ -14,12 +14,12 @@ def create_registry():
 @app.route("/")
 async def index() -> str:
     new_doc = edgewise.new_doc("Company")
-    doc = await edgewise.get_doc('Company', {'name': 'Fancy Business'})
+    doc = await edgewise.get_doc("Company", {"name": "Fancy Business"})
     return f"{doc.__repr__} {doc.your_class_method()}"
 
 
 @attrs
-@edgewise.register_with_schema(module='example')
+@edgewise.register_with_schema(module="example")
 class Company(edgewise.Document):
     def your_class_method(self) -> str:
         return "A class method method!"
