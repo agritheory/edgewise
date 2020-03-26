@@ -52,9 +52,6 @@ bin/
 .dmypy.json
 dmypy.json
 
-# Pipenv
-Pipfile.lock
-
 .env
 .venv
 .vscode

@@ -41,9 +41,12 @@ In my experience, EdgeDB SDL is one of the most intuitive ways to define schema,
 ### Installing
 Note - This library is not on PyPI (yet), you will have to install it from source
 
+- Install [Poetry](https://python-poetry.org/)
 - Clone the repository
-- Create a python virtual environment (optional but recommended)
-- Install into env by running `pip install -e ./path/to/repo`
+- Run `poetry install` dependencies
+- Run `poetry run pre-commit install` to install pre-commit hooks (optional)
+
+Note - You can either run `poetry shell` to activate the virtualenv and run any command or you can run commands within the virtualenv using `poetry run`.
 
 ## Using Edgewise
 ### How it Works
