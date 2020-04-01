@@ -1,4 +1,6 @@
 # edge|wise
+[![CircleCI](https://circleci.com/gh/agritheory/edgewise.svg?style=shield)](https://circleci.com/gh/agritheory/edgewise) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 This library is designed to be used as an Active Record style Object Relational Mapper for [EdgeDB](https://edgedb.com). A `ClassRegistry` object is built from a combination of EdgeDB schema and the `@register` family of decorators, which allows for merging class definition and database schema. This means you're able to add an overlay of your own class methods and properties that otherwise wouldn't exist. New instances can be created by calling `edgewise.new_doc('Object')`. Existing objects can be fetched with `edgewise.get_doc('Object', filters)` using either the object's UUID or a dictionary of filters filtering on a property (`{'name': 'Magic'}`)
 

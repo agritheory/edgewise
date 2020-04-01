@@ -31,5 +31,7 @@ On hold until JSON refactor
   - [ ] Multiple mixed and existing
 
 ## Running the test suite
+Test data is generated with [this script](https://gist.github.com/agritheory/8943fd3f4acd5baf65b8b0f8606fa919)
+
 
 `python -m pytest -s --cov=edgewise`
