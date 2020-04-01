@@ -31,6 +31,7 @@ class Document:
     async def _load(self, filters: typing.Optional[dict]) -> Document:
         conn = await edgewise.class_registry.connect("async")
         data = await conn.fetchall(load_query(self, filters))
+        await conn.aclose()
         if not data:
             return None
         data = data[0] if isinstance(data, edgedb.Set) else data

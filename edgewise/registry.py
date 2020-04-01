@@ -50,22 +50,25 @@ class ClassRegistry:
         self.scalars[key] = cls
 
     def get_object_schema(self):
-        objects = self.connect("sync").fetchall(object_schema())
-        self.connect.close()
+        conn = self.connect("sync")
+        objects = conn.fetchall(object_schema())
+        conn.close()
         return objects
 
     def get_enum_schema(
         self, module: typing.Optional[str] = None, enum: typing.Optional[str] = None
     ):
-        enums = self.connect("sync").fetchall(enum_schema())
-        self.connect.close()
+        conn = self.connect("sync")
+        enums = conn.fetchall(enum_schema())
+        conn.close()
         return enums
 
     def get_custom_scalar_schema(
         self, module: typing.Optional[str] = None, scalar: typing.Optional[str] = None
     ):
-        scalars = self.connect("sync").fetchall(custom_scalar_schema())
-        self.connect.close()
+        conn = self.connect("sync")
+        scalars = conn.fetchall(custom_scalar_schema())
+        conn.close()
         return scalars
 
     def build_classes(self, objects) -> typing.NoReturn:
