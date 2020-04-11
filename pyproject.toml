@@ -19,6 +19,7 @@ classifiers = [
 python = "^3.8"
 edgedb = "^0.7.1"
 attrs = "^19.3.0"
+wrapt = "^1.12.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"

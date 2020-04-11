@@ -3,24 +3,27 @@ import edgewise
 from edgewise import CustomScalar, register_scalar, register_scalar_with_schema
 import typing
 
+import pytest
 
-@attrs
+
 @register_scalar
 class RandomScalar(CustomScalar):
     def print_something(self):
         return f"Something!"
 
 
-@attrs
 @register_scalar_with_schema(module="example")
 class Password(CustomScalar):
-    def print_password(self):
+    def __str__(self):
+        return f"Password(******)"
+
+    def __repr__(self):
         return f"Password(******)"
 
 
 @pytest.mark.asyncio
 async def test_random_scalar():
-    random_scalar = await edgewise.new_doc("RandomScalar")
+    random_scalar = edgewise.new_doc("RandomScalar")
     assert random_scalar.print_something() == "Something!"
 
 
@@ -28,7 +31,7 @@ async def test_random_scalar():
 @pytest.mark.asyncio
 async def test_register_scalar_with_schema():
     # edgewise.class_registry = class_registry
-    custom_scalar = await edgewise.new_scalar("Password")
+    custom_scalar = edgewise.new_scalar("Password")
     custom_scalar = "mypassword"
     assert custom_scalar.__str__() == "Password(******)"
 

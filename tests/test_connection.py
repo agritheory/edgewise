@@ -19,6 +19,7 @@ def test_connection_object(connection_object):
 def test_edgedb_sync_connection(connection_object):
     sync_connection = connection_object("sync")
     assert isinstance(sync_connection, edgedb.BlockingIOConnection)
+    # close and assert is closed
 
 
 @pytest.mark.usefixtures("connection_object")
@@ -26,3 +27,4 @@ def test_edgedb_sync_connection(connection_object):
 async def test_edgedb_async_connections(connection_object):
     async_connection = await connection_object("async")
     assert isinstance(async_connection, edgedb.AsyncIOConnection)
+    # close and assert is closed

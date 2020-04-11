@@ -5,7 +5,6 @@ from .document import Document
 from .scalars import CustomScalar, DefaultEnum
 from .edgewise import (
     class_registry,
-    connect,
     get_doc,
     new_doc,
     new_scalar,

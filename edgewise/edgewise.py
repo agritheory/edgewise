@@ -5,19 +5,15 @@ import typing
 from uuid import UUID
 import warnings
 from attr import attrs
+import wrapt
 
 from .document import Document
 from .view import EdgeDBView
 from .registry import ClassRegistry
 from .scalars import CustomScalar, DefaultEnum
 
+
 class_registry = ClassRegistry()
-
-
-def connect(
-    action: str = "async",
-) -> typing.Union[edgedb.BlockingIOConnection, edgedb.AsyncIOConnection]:
-    return class_registry.connect(action)
 
 
 def new_doc(cls: str, *args, **kwargs) -> Document:
@@ -31,17 +27,21 @@ async def get_doc(cls: str, filters: typing.Union[UUID, dict]) -> Document:
     return await _doc._load(filters)
 
 
+# @wrapt.decorator
 def register(class_definition: typing.Type[Any], *args, **kwargs):
     global class_registry
-    class_registry.register(class_definition.__name__, class_definition)
-    return class_definition
+    print("REGISTERING " + class_definition.__name__)
+    class_registry.register(class_definition.__name__, attrs(class_definition))
+    return class_definition(*args, **kwargs)
 
 
 def register_with_schema(module: str):
-    def wrapped_registration(class_definition: typing.Type[Any], *args, **kwargs):
+    @wrapt.decorator
+    def wrapped_registration(class_definition: typing.Type[Any], instance: typing.Type[Any], *args, **kwargs):
         global class_registry
-        class_registry.merge_class(module, class_definition)
-        return class_definition
+        print("REGISTER WITH SCHEMA " + class_definition.__name__)
+        class_registry.merge_class(module, attrs(class_definition))
+        return class_definition(*args, **kwargs)
 
     return wrapped_registration
 
@@ -58,8 +58,10 @@ def register_scalar(scalar_definition: typing.Type[Any], *args, **kwargs):
 
 
 def register_scalar_with_schema(module: str):
-    def wrapped_registration(scalar_definition: typing.Type[Any], *args, **kwargs):
+    @wrapt.decorator
+    def wrapped_registration(scalar_definition: typing.Type[Any], instance: typing.Type[Any], *args, **kwargs):
         global class_registry
+        print("MERGING SCALAR " + scalar_definition.__name__)
         class_registry.merge_custom_scalar(module, attrs(scalar_definition))
         return scalar_definition
 
