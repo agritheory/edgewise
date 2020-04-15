@@ -20,8 +20,11 @@ class EdgeDBConnection:
 
     def __call__(
         self, action: str = "async"
-    ) -> typing.Union[edgedb.BlockingIOConnection, edgedb.AsyncIOConnection]:
-        if action not in ("sync", "async"):
+    ) -> typing.Union[
+        edgedb.BlockingIOConnection,
+        typing.Coroutine[typing.Any, typing.Any, edgedb.AsyncIOConnection],
+    ]:
+        if action not in ("sync", "async"):  # TODO: Refactor to Enum
             raise TypeError(
                 f"'Action' must be one of 'sync' or 'async'. You provided '{action}'"
             )
@@ -36,7 +39,7 @@ class EdgeDBConnection:
             dsn=self.dsn,
             host=self.host,
             port=self.port,
-            admin=self.admin,
+            admin=bool(self.admin),
             user=self.user,
             password=self.password,
             database=self.database,
@@ -50,36 +53,9 @@ class EdgeDBConnection:
             dsn=self.dsn,
             host=self.host,
             port=self.port,
-            admin=self.admin,
+            admin=bool(self.admin),
             user=self.user,
             password=self.password,
             database=self.database,
             timeout=self.timeout,
         )
-
-    # not sure if this is needed
-    def close(self) -> typing.NoReturn:
-        edgedb.connect(
-            dsn=self.dsn,
-            host=self.host,
-            port=self.port,
-            admin=self.admin,
-            user=self.user,
-            password=self.password,
-            database=self.database,
-            timeout=self.timeout,
-        ).close()
-
-    # not sure if this is needed
-    async def aclose(self) -> typing.NoReturn:
-        conn = await edgedb.connect_async(
-            dsn=self.dsn,
-            host=self.host,
-            port=self.port,
-            admin=self.admin,
-            user=self.user,
-            password=self.password,
-            database=self.database,
-            timeout=self.timeout,
-        )
-        await conn.aclose()

@@ -8,6 +8,7 @@ import edgedb
 
 def load_query(doc, filters) -> edgedb.Object:
     if ("id", "uuid") in filters:
+        uuid = filters.get("uuid") or filters.get("id")
         fields = ",\n\t".join(doc.__fields__)
         load_query = f"""
             WITH MODULE {doc.__edbmodule__}
@@ -55,7 +56,7 @@ def insert_attribute(doc, k: str, v: typing.Optional[typing.Any], query: str):
     if not v or k in ("id", "_id"):  # let EdgeDB assign object's UUID
         return ""
     elif isinstance(v, (set, list, edgedb.Array)):  # multi link Document
-        sub_query = "".join([nested_multi_link(list_item) for list_item in v])
+        subquery = "".join([nested_multi_link(list_item) for list_item in v])
         return f"\t{k} := {subquery},\n"
     elif hasattr(v, "__edbmodule__") and v.__module__ == "edgewise.registry":
         # single linked class inherited from Document

@@ -7,8 +7,8 @@ import typing
 import edgedb
 from attr import attrib, attrs, make_class
 
+import edgewise
 from edgewise.connections import EdgeDBConnection
-from edgewise.document import Document
 from edgewise.edb_utils import type_map
 from edgewise.queries import custom_scalar_schema, enum_schema, object_schema
 from edgewise.scalars import CustomScalar, DefaultEnum
@@ -21,7 +21,7 @@ class ClassRegistry:
     scalars = attrib(default={}, type=typing.Dict)
     repr_timestamps = attrib(default=False, type=bool)
 
-    def __attrs_post_init__(self) -> typing.NoReturn:
+    def __attrs_post_init__(self) -> None:
         if self.connect is not None:
             self.build_classes(self.get_object_schema())
             self.build_enums(self.get_enum_schema())
@@ -37,50 +37,50 @@ class ClassRegistry:
             return cls
         return cls(*args, **kwargs)
 
-    def register(self, key: str, cls: type) -> typing.NoReturn:
+    def register(self, key: str, cls: type) -> None:
         if not self.registry.get(key):
             self.registry[key] = cls
 
-    def _register(self, key: str, cls: type) -> typing.NoReturn:
+    def _register(self, key: str, cls: type) -> None:
         if self.registry.get(key):
             self.registry.pop(key)
         self.registry[key] = cls
 
-    def _register_scalar(self, key: str, cls: type) -> typing.NoReturn:
+    def _register_scalar(self, key: str, cls: type) -> None:
         self.scalars[key] = cls
 
-    def get_object_schema(self):
+    def get_object_schema(self) -> typing.List:
         conn = self.connect("sync")
-        objects = conn.fetchall(object_schema())
+        objects = conn.fetchall(object_schema())  # type: ignore
         conn.close()
         return objects
 
     def get_enum_schema(
         self, module: typing.Optional[str] = None, enum: typing.Optional[str] = None
-    ):
+    ) -> typing.List:
         conn = self.connect("sync")
-        enums = conn.fetchall(enum_schema())
+        enums = conn.fetchall(enum_schema())  # type: ignore
         conn.close()
         return enums
 
     def get_custom_scalar_schema(
         self, module: typing.Optional[str] = None, scalar: typing.Optional[str] = None
-    ):
+    ) -> typing.List:
         conn = self.connect("sync")
-        scalars = conn.fetchall(custom_scalar_schema())
+        scalars = conn.fetchall(custom_scalar_schema())  # type: ignore
         conn.close()
         return scalars
 
-    def build_classes(self, objects) -> typing.NoReturn:
+    def build_classes(self, objects) -> None:
         for obj in objects:
             object_module, object_name = obj.name.split("::")
             attributes = self._build_attributes(obj)
-            new_class = make_class(object_name, attributes, bases=(Document,))
+            new_class = make_class(object_name, attributes, bases=(edgewise.Document,))
             self.register(object_name, new_class)
 
-    def merge_class(self, module: str, class_definition: object) -> typing.NoReturn:
+    def merge_class(self, module: str, class_definition: type) -> None:
         filter = f"\nFILTER .name = '{module}::{class_definition.__name__}' LIMIT 1;"
-        obj = self.connect("sync").fetchall(object_schema(filter))
+        obj = self.connect("sync").fetchall(object_schema(filter))  # type: ignore
         if not obj:
             self.register(class_definition.__name__, class_definition)
             return
@@ -114,13 +114,13 @@ class ClassRegistry:
         for link in obj.links:
             if link.name == "__type__":
                 continue
-            link_type = typing.Optional[link.target.name.split("::")[1]]
+            link_type = typing.Optional[link.target.name.split("::")[1]]  # type: ignore
             if link.cardinality == "MANY":
-                link_type = typing.Optional[typing.List[link_type]]
+                link_type = typing.Optional[typing.List[link_type]] # type: ignore
             attributes[link.name] = attrib(default=None, type=link_type)
         return attributes
 
-    def build_enums(self, enums) -> typing.NoReturn:
+    def build_enums(self, enums) -> None:
         for enum in enums:
             enum_module, enum_name = enum.name.split("::")
             new_enum = DefaultEnum(enum_name, list(enum.enum_values))
@@ -131,7 +131,7 @@ class ClassRegistry:
             new_enum.__name__ = enum_name
             self._register_scalar(enum_name, new_enum)
 
-    def build_custom_scalars(self, scalars) -> typing.NoReturn:
+    def build_custom_scalars(self, scalars) -> None:
         for scalar in scalars:
             attributes = {}
             scalar_module, scalar_name = scalar.name.split("::")
@@ -144,7 +144,7 @@ class ClassRegistry:
             new_class = make_class(scalar_name, attributes, bases=(CustomScalar,))
             self._register_scalar(scalar_name, new_class)
 
-    def merge_custom_scalar(self, module: str, scalar_definition) -> typing.NoReturn:
+    def merge_custom_scalar(self, module: str, scalar_definition) -> None:
         scalar = self.get_custom_scalar_schema(
             module=module, scalar=scalar_definition.__name__
         )[0]
