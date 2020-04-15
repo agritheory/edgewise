@@ -277,16 +277,8 @@ optional = false
 python-versions = "*"
 version = "0.1.9"
 
-[[package]]
-category = "main"
-description = "Module for decorators, wrappers and monkey patching."
-name = "wrapt"
-optional = false
-python-versions = "*"
-version = "1.12.1"
-
 [metadata]
-content-hash = "cc11d1d8aaf946f1ad8e29dd29c49ff34a22bbd434292c578e57e37827f6780f"
+content-hash = "c333d0453d496ff64116e5511f0c18aab4c2e5097994ae556c507aff2f7bbac5"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -438,7 +430,4 @@ virtualenv = [
 wcwidth = [
     {file = "wcwidth-0.1.9-py2.py3-none-any.whl", hash = "sha256:cafe2186b3c009a04067022ce1dcd79cb38d8d65ee4f4791b8888d6599d1bbe1"},
     {file = "wcwidth-0.1.9.tar.gz", hash = "sha256:ee73862862a156bf77ff92b09034fc4825dd3af9cf81bc5b360668d425f3c5f1"},
-]
-wrapt = [
-    {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},
 ]
