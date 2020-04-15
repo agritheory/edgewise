@@ -45,6 +45,7 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 bin/
+prof/
 
 
 # mypy
