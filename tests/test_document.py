@@ -26,4 +26,4 @@ async def test_DocumentNotInDatabase():
 @pytest.mark.asyncio
 async def test_Company():
     doc = edgewise.new_doc("Company")
-    assert hasattr(doc, 'your_class_method')
+    assert hasattr(doc, "your_class_method")

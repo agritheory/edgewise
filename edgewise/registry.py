@@ -116,7 +116,7 @@ class ClassRegistry:
                 continue
             link_type = typing.Optional[link.target.name.split("::")[1]]  # type: ignore
             if link.cardinality == "MANY":
-                link_type = typing.Optional[typing.List[link_type]] # type: ignore
+                link_type = typing.Optional[typing.List[link_type]]  # type: ignore
             attributes[link.name] = attrib(default=None, type=link_type)
         return attributes
 

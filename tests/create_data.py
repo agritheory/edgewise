@@ -35,9 +35,9 @@ COMMIT MIGRATION init_user;
 
 
 async def create_company():
-    file_path = Path(__file__).parent / 'company.csv'
+    file_path = Path(__file__).parent / "company.csv"
     with open(file_path) as csvfile:
-        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        csvreader = csv.reader(csvfile, delimiter=",", quotechar='"')
         for row in csvreader:
             company = edgewise.new_doc("Company")
             company.name = row[0]
@@ -46,24 +46,24 @@ async def create_company():
 
 
 async def create_user():
-    file_path = Path(__file__).parent / 'user.csv'
+    file_path = Path(__file__).parent / "user.csv"
     with open(file_path) as csvfile:
-        csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        csvreader = csv.reader(csvfile, delimiter=",", quotechar='"')
         for row in csvreader:
             print(row[0])
             user = edgewise.new_doc("User")
             user.first_name = row[0]
             user.last_name = row[1]
             user.email = row[2]
-            user.password = '<raw_str>' + row[3]
+            user.password = "<raw_str>" + row[3]
             user.username = user.email
-            user.company = await edgewise.get_doc('Company', {'name': row[4]})
-            user.rbac_role = await edgewise.get_doc("RBACRole", {'name': row[5]})
+            user.company = await edgewise.get_doc("Company", {"name": row[4]})
+            user.rbac_role = await edgewise.get_doc("RBACRole", {"name": row[5]})
             await user.save()
 
 
 async def create_rbac_role():
-    for role_name in ('Base User', 'Guest', 'Administrator'):
+    for role_name in ("Base User", "Guest", "Administrator"):
         role = edgewise.new_doc("RBACRole")
         role.name = role_name
         await role.save()
