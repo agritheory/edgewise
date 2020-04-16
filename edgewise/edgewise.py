@@ -38,7 +38,9 @@ async def get_doc(cls: str, filters: typing.Union[UUID, dict]) -> edgewise.Docum
 
 
 def register(class_definition: typing.Type[typing.Any], *args, **kwargs):
-    _edgewise_module.class_registry.register(class_definition.__name__, attrs(class_definition))
+    _edgewise_module.class_registry.register(
+        class_definition.__name__, attrs(class_definition)
+    )
     return class_definition(*args, **kwargs)
 
 

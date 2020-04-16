@@ -3,7 +3,6 @@ name = "edgewise"
 version = "0.1.0"
 description = "An Active Record ORM for EdgeDB"
 authors = ["Tyler Matteson <tyler@agritheory.com>"]
-readme = "readme.md"
 repository = "https://github.com/agritheory/edgewise"
 license = "Apache-2.0"
 classifiers = [
@@ -19,6 +18,7 @@ classifiers = [
 python = "^3.8"
 edgedb = "^0.7.1"
 attrs = "^19.3.0"
+black = "^19.10b0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.1"

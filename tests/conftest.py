@@ -5,7 +5,12 @@ from importlib import import_module
 import pytest
 from attr import attrs
 
-from edgewise import EdgeDBConnection, ClassRegistry, init_class_registry, class_registry
+from edgewise import (
+    EdgeDBConnection,
+    ClassRegistry,
+    init_class_registry,
+    class_registry,
+)
 from tests.create_data import user_schema, create_company, create_user, create_rbac_role
 
 

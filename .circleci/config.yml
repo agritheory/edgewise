@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/project
+    docker:
+      - image: circleci/python:3.8
+        environment:
+          EDGEDB_USER: edgedb
+          EDGEDB_DATABASE: edgedb
+      - image: edgedb/edgedb
+    steps:
+      - checkout
+      - run:
+          name: Install Dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.6.1
+      - restore_cache:
+          keys: 
+            - deps-{{ checksum "poetry.lock" }}
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo pip install poetry
+            poetry install
+      - save_cache:
+          key: deps-{{ checksum "poetry.lock" }}
+          paths: 
+            - /home/circleci/.cache/pypoetry/virtualenvs
+      - run:
+          name: Lint using Black
+          command: poetry run black --check .
+      - run:
+          name: Wait for EdgeDB
+          command: dockerize -wait tcp://localhost:5656 -timeout 1m
+      - run:
+          name: Run Tests
+          command: poetry run pytest -s --mypy edgewise/ --cov=edgewise --profile

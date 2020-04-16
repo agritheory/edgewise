@@ -21,14 +21,14 @@ class Password(CustomScalar):
         return f"Password(******)"
 
 
-@pytest.mark.skip('need to refactor scalar')
+@pytest.mark.skip("need to refactor scalar")
 @pytest.mark.asyncio
 async def test_random_scalar():
     random_scalar = edgewise.new_doc("RandomScalar")
     assert random_scalar.print_something() == "Something!"
 
 
-@pytest.mark.skip('need to refactor scalar')
+@pytest.mark.skip("need to refactor scalar")
 @pytest.mark.asyncio
 async def test_register_scalar_with_schema():
     # edgewise.class_registry = class_registry
